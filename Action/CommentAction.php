@@ -42,21 +42,26 @@ use DateInterval;
 use DateTime;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\Join;
+use Propel\Runtime\Exception\PropelException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Thelia\Core\Template\ParserInterface;
 use Thelia\Log\Tlog;
 use Thelia\Mailer\MailerFactory;
+use Thelia\Model\Category;
+use Thelia\Model\CategoryQuery;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\ContentQuery;
 use Thelia\Model\CustomerQuery;
 use Thelia\Model\Map\OrderProductTableMap;
 use Thelia\Model\Map\OrderTableMap;
+use Thelia\Model\Map\ProductCategoryTableMap;
 use Thelia\Model\Map\ProductSaleElementsTableMap;
 use Thelia\Model\MessageQuery;
 use Thelia\Model\MetaData;
 use Thelia\Model\MetaDataQuery;
 use Thelia\Model\OrderProductQuery;
+use Thelia\Model\Product;
 use Thelia\Model\ProductQuery;
 use Thelia\Tools\URL;
 
@@ -190,36 +195,151 @@ class CommentAction implements EventSubscriberInterface
         }
     }
 
+    /**
+     * Compute all averages involving a product.
+     *
+     * @param CommentComputeRatingEvent $event Compute request event.
+     */
     public function productRatingCompute(CommentComputeRatingEvent $event)
     {
-        if ('product' === $event->getRef()) {
-
-            $product = ProductQuery::create()->findPk($event->getRefId());
-            if (null !== $product) {
-
-                $query = CommentQuery::create()
-                    ->filterByRef('product')
-                    ->filterByRefId($product->getId())
-                    ->filterByStatus(Comment::ACCEPTED)
-                    ->withColumn("AVG(RATING)", 'AVG_RATING')
-                    ->select('AVG_RATING');
-
-                $rating = $query->findOne();
-
-                if (null !== $rating) {
-                    $rating = round($rating, 2);
-
-                    $event->setRating($rating);
-
-                    MetaDataQuery::setVal(
-                        Comment::META_KEY_RATING,
-                        MetaData::PRODUCT_KEY,
-                        $product->getId(),
-                        $rating
-                    );
-                }
-            }
+        // only process compute requests for products
+        if ('product' !== $event->getRef()) {
+            return;
         }
+
+        // only process compute requests that have a product
+        $product = ProductQuery::create()->findPk($event->getRefId());
+        if (null === $product) {
+            return;
+        }
+
+        // average of ratings for the product
+        $this->productRatingComputeForProduct($product, $event);
+
+        // average of ratings for the product's categories
+        foreach ($product->getCategories() as $category) {
+            $this->productRatingComputeForCategory($category);
+        }
+
+        // average of ratings for all products
+        $this->productRatingComputeForAll();
+    }
+
+    /**
+     * Compute the average rating for a product.
+     *
+     * @param Product $product Product to compute the average for.
+     * @param CommentComputeRatingEvent $event Event in which to set the computed value.
+     */
+    protected function productRatingComputeForProduct(Product $product, CommentComputeRatingEvent $event)
+    {
+        $query = CommentQuery::create()
+            ->filterByRef('product')
+            ->filterByRefId($product->getId());
+
+        $rating = static::averageComments(
+            $query,
+            MetaData::PRODUCT_KEY,
+            $product->getId()
+        );
+
+        $event->setRating($rating);
+    }
+
+    /**
+     * Compute the average rating for all product in a category and its sub-categories.
+     *
+     * @param Category $category Category to compute the average for.
+     */
+    protected function productRatingComputeForCategory(Category $category)
+    {
+        // list this category and all its sub-categories
+        $categories = $this->getSubCategories($category);
+
+        $query = CommentQuery::create()
+            ->filterByRef('product');
+
+        $query->addJoin(
+            CommentTableMap::REF_ID,
+            ProductCategoryTableMap::PRODUCT_ID,
+            Criteria::INNER_JOIN
+        );
+
+        $query->where(
+            ProductCategoryTableMap::CATEGORY_ID . Criteria::IN . "('". implode("','", $categories) ."')"
+        );
+
+        $this->averageComments(
+            $query,
+            MetaData::PRODUCT_KEY . '-for-' . MetaData::CATEGORY_KEY,
+            $category->getId()
+        );
+
+        // compute the rating for this category's parent
+        $parentCategory = CategoryQuery::create()->findPk($category->getParent());
+        if (null !== $parentCategory) {
+            $this->productRatingComputeForCategory($parentCategory);
+        }
+    }
+
+    /**
+     * Get all sub categories, of any level, of a category.
+     *
+     * @param Category $rootCategory Root category.
+     * @return array Ids of this category and all its sub categories.
+     */
+    protected function getSubCategories(Category $rootCategory)
+    {
+        $subCategories = [$rootCategory->getId()];
+
+        /** @var Category $subCategory */
+        foreach (CategoryQuery::create()->findByParent($rootCategory->getId()) as $subCategory) {
+            $subCategories = array_merge($subCategories, $this->getSubCategories($subCategory));
+        }
+
+        return $subCategories;
+    }
+
+    /**
+     * Compute the average rating for all products in the store.
+     */
+    protected function productRatingComputeForAll()
+    {
+        $query = CommentQuery::create()->filterByRef('product');
+
+        $this->averageComments(
+            $query,
+            MetaData::PRODUCT_KEY . '-all',
+            0
+        );
+    }
+
+    /**
+     * Average comment ratings from a query and store the value into the meta-data table.
+     *
+     * @param CommentQuery $query Query of the comments to average.
+     * @param string $metaElementKey Meta-data element key.
+     * @param int $metaElementId Meta-data element id.
+     * @return float The average rating.
+     * @throws PropelException
+     */
+    protected function averageComments(CommentQuery $query, $metaElementKey, $metaElementId)
+    {
+        $query
+            ->filterByStatus(Comment::ACCEPTED)
+            ->withColumn("AVG(RATING)", 'AVG_RATING')
+            ->select('AVG_RATING');
+
+        $rating = $query->findOne();
+
+        MetaDataQuery::setVal(
+            Comment::META_KEY_RATING,
+            $metaElementKey,
+            $metaElementId,
+            $rating
+        );
+
+        return $rating;
     }
 
     /**
