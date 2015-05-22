@@ -315,7 +315,8 @@ class CommentAction implements EventSubscriberInterface
     }
 
     /**
-     * Average comment ratings from a query and store the value into the meta-data table.
+     * Average comment ratings from a query.
+     * Store the average rating and the number of ratings into the meta-data table.
      *
      * @param CommentQuery $query Query of the comments to average.
      * @param string $metaElementKey Meta-data element key.
@@ -327,8 +328,9 @@ class CommentAction implements EventSubscriberInterface
     {
         $query
             ->filterByStatus(Comment::ACCEPTED)
-            ->withColumn("AVG(RATING)", 'AVG_RATING')
-            ->select('AVG_RATING');
+            ->withColumn("AVG(RATING)", 'rating')
+            ->withColumn("COUNT(RATING)", 'count')
+            ->select('rating', 'count');
 
         $rating = $query->findOne();
 
@@ -339,7 +341,7 @@ class CommentAction implements EventSubscriberInterface
             $rating
         );
 
-        return $rating;
+        return $rating['count'];
     }
 
     /**
