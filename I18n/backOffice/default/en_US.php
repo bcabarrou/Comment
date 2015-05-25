@@ -25,6 +25,7 @@ return array(
     'Edit comment %name' => 'Edit comment %name',
     'Editing comment "%name"' => 'Editing comment "%name"',
     'Error' => 'Error',
+    'Featured' => 'Featured',
     'Filter' => 'Filter',
     'Home' => 'Home',
     'ID' => 'ID',

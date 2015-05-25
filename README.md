@@ -62,6 +62,7 @@ The module provides a new loop : **comment**
 |**locale**    | the locale of the comment : fr_FR                                  |
 |**load_ref**  | load or not the reference object. default = 0                      |
 |**ref_locale**| locale of the reference object fields. default: the request locale |
+|**featured**  | the comment is featured                                            |
 
 ### Output arguments
 
@@ -78,8 +79,9 @@ The module provides a new loop : **comment**
 |$RATING      | the rating                                                                 |                                                                      
 |$STATUS      | the status :  : 0 = pending, 1 = accepted                                  |                                                                                                      
 |$VERIFIED    | 0 : not verified / not applicable, 1 = the customer has bought the product |                                                                                                                                        
-|$ABUSE       | an abuse counter.                                                          |                                                                             
+|$ABUSE       | an abuse counter.                                                          |
 |$POSITION    | the position                                                               |
+|$FEATURED    | whether the comment is featured                                            |
 
 ## how to get the rating of a product
 

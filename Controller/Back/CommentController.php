@@ -157,6 +157,7 @@ class CommentController extends AbstractCrudController
         $event->setStatus($formData['status']);
         $event->setVerified($formData['verified']);
         $event->setRating($formData['rating']);
+        $event->setFeatured($formData['featured']);
 
         return $event;
     }

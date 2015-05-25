@@ -155,6 +155,16 @@ class CommentCreationForm extends BaseForm
                         'for' => 'abuse'
                     ]
                 ]
+            )
+            ->add(
+                'featured',
+                'checkbox',
+                [
+                    'label' => $this->trans('Featured'),
+                    'label_attr' => [
+                        'for' => 'featured'
+                    ]
+                ]
             );
     }
 

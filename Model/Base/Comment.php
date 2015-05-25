@@ -130,6 +130,13 @@ abstract class Comment implements ActiveRecordInterface
     protected $abuse;
 
     /**
+     * The value for the featured field.
+     * Note: this column has a database default value of: false
+     * @var        boolean
+     */
+    protected $featured;
+
+    /**
      * The value for the locale field.
      * @var        string
      */
@@ -189,6 +196,7 @@ abstract class Comment implements ActiveRecordInterface
     public function applyDefaultValues()
     {
         $this->status = 0;
+        $this->featured = false;
     }
 
     /**
@@ -584,6 +592,17 @@ abstract class Comment implements ActiveRecordInterface
     }
 
     /**
+     * Get the [featured] column value.
+     *
+     * @return   boolean
+     */
+    public function getFeatured()
+    {
+
+        return $this->featured;
+    }
+
+    /**
      * Get the [locale] column value.
      *
      * @return   string
@@ -908,6 +927,35 @@ abstract class Comment implements ActiveRecordInterface
     } // setAbuse()
 
     /**
+     * Sets the value of the [featured] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param      boolean|integer|string $v The new value
+     * @return   \Comment\Model\Comment The current object (for fluent API support)
+     */
+    public function setFeatured($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->featured !== $v) {
+            $this->featured = $v;
+            $this->modifiedColumns[CommentTableMap::FEATURED] = true;
+        }
+
+
+        return $this;
+    } // setFeatured()
+
+    /**
      * Set the value of [locale] column.
      *
      * @param      string $v new value
@@ -1005,6 +1053,10 @@ abstract class Comment implements ActiveRecordInterface
                 return false;
             }
 
+            if ($this->featured !== false) {
+                return false;
+            }
+
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -1068,22 +1120,25 @@ abstract class Comment implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : CommentTableMap::translateFieldName('Abuse', TableMap::TYPE_PHPNAME, $indexType)];
             $this->abuse = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : CommentTableMap::translateFieldName('Locale', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 12 + $startcol : CommentTableMap::translateFieldName('Featured', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->featured = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : CommentTableMap::translateFieldName('Locale', TableMap::TYPE_PHPNAME, $indexType)];
             $this->locale = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 13 + $startcol : CommentTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 14 + $startcol : CommentTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, '\DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 14 + $startcol : CommentTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 15 + $startcol : CommentTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->updated_at = (null !== $col) ? PropelDateTime::newInstance($col, null, '\DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 15 + $startcol : CommentTableMap::translateFieldName('SortableRank', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 16 + $startcol : CommentTableMap::translateFieldName('SortableRank', TableMap::TYPE_PHPNAME, $indexType)];
             $this->sortable_rank = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
@@ -1093,7 +1148,7 @@ abstract class Comment implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 16; // 16 = CommentTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 17; // 17 = CommentTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating \Comment\Model\Comment object", 0, $e);
@@ -1384,6 +1439,9 @@ abstract class Comment implements ActiveRecordInterface
         if ($this->isColumnModified(CommentTableMap::ABUSE)) {
             $modifiedColumns[':p' . $index++]  = 'ABUSE';
         }
+        if ($this->isColumnModified(CommentTableMap::FEATURED)) {
+            $modifiedColumns[':p' . $index++]  = 'FEATURED';
+        }
         if ($this->isColumnModified(CommentTableMap::LOCALE)) {
             $modifiedColumns[':p' . $index++]  = 'LOCALE';
         }
@@ -1442,6 +1500,9 @@ abstract class Comment implements ActiveRecordInterface
                         break;
                     case 'ABUSE':
                         $stmt->bindValue($identifier, $this->abuse, PDO::PARAM_INT);
+                        break;
+                    case 'FEATURED':
+                        $stmt->bindValue($identifier, (int) $this->featured, PDO::PARAM_INT);
                         break;
                     case 'LOCALE':
                         $stmt->bindValue($identifier, $this->locale, PDO::PARAM_STR);
@@ -1554,15 +1615,18 @@ abstract class Comment implements ActiveRecordInterface
                 return $this->getAbuse();
                 break;
             case 12:
-                return $this->getLocale();
+                return $this->getFeatured();
                 break;
             case 13:
-                return $this->getCreatedAt();
+                return $this->getLocale();
                 break;
             case 14:
-                return $this->getUpdatedAt();
+                return $this->getCreatedAt();
                 break;
             case 15:
+                return $this->getUpdatedAt();
+                break;
+            case 16:
                 return $this->getSortableRank();
                 break;
             default:
@@ -1606,10 +1670,11 @@ abstract class Comment implements ActiveRecordInterface
             $keys[9] => $this->getStatus(),
             $keys[10] => $this->getVerified(),
             $keys[11] => $this->getAbuse(),
-            $keys[12] => $this->getLocale(),
-            $keys[13] => $this->getCreatedAt(),
-            $keys[14] => $this->getUpdatedAt(),
-            $keys[15] => $this->getSortableRank(),
+            $keys[12] => $this->getFeatured(),
+            $keys[13] => $this->getLocale(),
+            $keys[14] => $this->getCreatedAt(),
+            $keys[15] => $this->getUpdatedAt(),
+            $keys[16] => $this->getSortableRank(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1691,15 +1756,18 @@ abstract class Comment implements ActiveRecordInterface
                 $this->setAbuse($value);
                 break;
             case 12:
-                $this->setLocale($value);
+                $this->setFeatured($value);
                 break;
             case 13:
-                $this->setCreatedAt($value);
+                $this->setLocale($value);
                 break;
             case 14:
-                $this->setUpdatedAt($value);
+                $this->setCreatedAt($value);
                 break;
             case 15:
+                $this->setUpdatedAt($value);
+                break;
+            case 16:
                 $this->setSortableRank($value);
                 break;
         } // switch()
@@ -1738,10 +1806,11 @@ abstract class Comment implements ActiveRecordInterface
         if (array_key_exists($keys[9], $arr)) $this->setStatus($arr[$keys[9]]);
         if (array_key_exists($keys[10], $arr)) $this->setVerified($arr[$keys[10]]);
         if (array_key_exists($keys[11], $arr)) $this->setAbuse($arr[$keys[11]]);
-        if (array_key_exists($keys[12], $arr)) $this->setLocale($arr[$keys[12]]);
-        if (array_key_exists($keys[13], $arr)) $this->setCreatedAt($arr[$keys[13]]);
-        if (array_key_exists($keys[14], $arr)) $this->setUpdatedAt($arr[$keys[14]]);
-        if (array_key_exists($keys[15], $arr)) $this->setSortableRank($arr[$keys[15]]);
+        if (array_key_exists($keys[12], $arr)) $this->setFeatured($arr[$keys[12]]);
+        if (array_key_exists($keys[13], $arr)) $this->setLocale($arr[$keys[13]]);
+        if (array_key_exists($keys[14], $arr)) $this->setCreatedAt($arr[$keys[14]]);
+        if (array_key_exists($keys[15], $arr)) $this->setUpdatedAt($arr[$keys[15]]);
+        if (array_key_exists($keys[16], $arr)) $this->setSortableRank($arr[$keys[16]]);
     }
 
     /**
@@ -1765,6 +1834,7 @@ abstract class Comment implements ActiveRecordInterface
         if ($this->isColumnModified(CommentTableMap::STATUS)) $criteria->add(CommentTableMap::STATUS, $this->status);
         if ($this->isColumnModified(CommentTableMap::VERIFIED)) $criteria->add(CommentTableMap::VERIFIED, $this->verified);
         if ($this->isColumnModified(CommentTableMap::ABUSE)) $criteria->add(CommentTableMap::ABUSE, $this->abuse);
+        if ($this->isColumnModified(CommentTableMap::FEATURED)) $criteria->add(CommentTableMap::FEATURED, $this->featured);
         if ($this->isColumnModified(CommentTableMap::LOCALE)) $criteria->add(CommentTableMap::LOCALE, $this->locale);
         if ($this->isColumnModified(CommentTableMap::CREATED_AT)) $criteria->add(CommentTableMap::CREATED_AT, $this->created_at);
         if ($this->isColumnModified(CommentTableMap::UPDATED_AT)) $criteria->add(CommentTableMap::UPDATED_AT, $this->updated_at);
@@ -1843,6 +1913,7 @@ abstract class Comment implements ActiveRecordInterface
         $copyObj->setStatus($this->getStatus());
         $copyObj->setVerified($this->getVerified());
         $copyObj->setAbuse($this->getAbuse());
+        $copyObj->setFeatured($this->getFeatured());
         $copyObj->setLocale($this->getLocale());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
@@ -1943,6 +2014,7 @@ abstract class Comment implements ActiveRecordInterface
         $this->status = null;
         $this->verified = null;
         $this->abuse = null;
+        $this->featured = null;
         $this->locale = null;
         $this->created_at = null;
         $this->updated_at = null;

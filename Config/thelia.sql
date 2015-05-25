@@ -23,6 +23,7 @@ CREATE TABLE `comment`
     `status` TINYINT DEFAULT 0,
     `verified` TINYINT,
     `abuse` INTEGER,
+    `featured` TINYINT(1) DEFAULT 0,
     `locale` VARCHAR(10),
     `created_at` DATETIME,
     `updated_at` DATETIME,
