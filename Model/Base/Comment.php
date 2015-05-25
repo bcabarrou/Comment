@@ -148,6 +148,12 @@ abstract class Comment implements ActiveRecordInterface
     protected $updated_at;
 
     /**
+     * The value for the sortable_rank field.
+     * @var        int
+     */
+    protected $sortable_rank;
+
+    /**
      * @var        Customer
      */
     protected $aCustomer;
@@ -159,6 +165,20 @@ abstract class Comment implements ActiveRecordInterface
      * @var boolean
      */
     protected $alreadyInSave = false;
+
+    // sortable behavior
+
+    /**
+     * Queries to be executed in the save transaction
+     * @var        array
+     */
+    protected $sortableQueries = array();
+
+    /**
+     * The old scope value.
+     * @var        int
+     */
+    protected $oldScope;
 
     /**
      * Applies default values to this object.
@@ -615,6 +635,17 @@ abstract class Comment implements ActiveRecordInterface
     }
 
     /**
+     * Get the [sortable_rank] column value.
+     *
+     * @return   int
+     */
+    public function getSortableRank()
+    {
+
+        return $this->sortable_rank;
+    }
+
+    /**
      * Set the value of [id] column.
      *
      * @param      int $v new value
@@ -694,6 +725,9 @@ abstract class Comment implements ActiveRecordInterface
         }
 
         if ($this->ref !== $v) {
+            // sortable behavior
+            $this->oldScope[0] = $this->ref;
+
             $this->ref = $v;
             $this->modifiedColumns[CommentTableMap::REF] = true;
         }
@@ -715,6 +749,9 @@ abstract class Comment implements ActiveRecordInterface
         }
 
         if ($this->ref_id !== $v) {
+            // sortable behavior
+            $this->oldScope[1] = $this->ref_id;
+
             $this->ref_id = $v;
             $this->modifiedColumns[CommentTableMap::REF_ID] = true;
         }
@@ -934,6 +971,27 @@ abstract class Comment implements ActiveRecordInterface
     } // setUpdatedAt()
 
     /**
+     * Set the value of [sortable_rank] column.
+     *
+     * @param      int $v new value
+     * @return   \Comment\Model\Comment The current object (for fluent API support)
+     */
+    public function setSortableRank($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->sortable_rank !== $v) {
+            $this->sortable_rank = $v;
+            $this->modifiedColumns[CommentTableMap::SORTABLE_RANK] = true;
+        }
+
+
+        return $this;
+    } // setSortableRank()
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -1024,6 +1082,9 @@ abstract class Comment implements ActiveRecordInterface
                 $col = null;
             }
             $this->updated_at = (null !== $col) ? PropelDateTime::newInstance($col, null, '\DateTime') : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 15 + $startcol : CommentTableMap::translateFieldName('SortableRank', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->sortable_rank = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -1032,7 +1093,7 @@ abstract class Comment implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 15; // 15 = CommentTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 16; // 16 = CommentTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating \Comment\Model\Comment object", 0, $e);
@@ -1124,6 +1185,11 @@ abstract class Comment implements ActiveRecordInterface
             $deleteQuery = ChildCommentQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
+            // sortable behavior
+
+            ChildCommentQuery::sortableShiftRank(-1, $this->getSortableRank() + 1, null, $this->getScopeValue(), $con);
+            CommentTableMap::clearInstancePool();
+
             if ($ret) {
                 $deleteQuery->delete($con);
                 $this->postDelete($con);
@@ -1165,6 +1231,8 @@ abstract class Comment implements ActiveRecordInterface
         $isInsert = $this->isNew();
         try {
             $ret = $this->preSave($con);
+            // sortable behavior
+            $this->processSortableQueries($con);
             if ($isInsert) {
                 $ret = $ret && $this->preInsert($con);
                 // timestampable behavior
@@ -1174,12 +1242,24 @@ abstract class Comment implements ActiveRecordInterface
                 if (!$this->isColumnModified(CommentTableMap::UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
+                // sortable behavior
+                if (!$this->isColumnModified(CommentTableMap::RANK_COL)) {
+                    $this->setSortableRank(ChildCommentQuery::create()->getMaxRankArray($this->getScopeValue(), $con) + 1);
+                }
+
             } else {
                 $ret = $ret && $this->preUpdate($con);
                 // timestampable behavior
                 if ($this->isModified() && !$this->isColumnModified(CommentTableMap::UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
+                // sortable behavior
+                // if scope has changed and rank was not modified (if yes, assuming superior action)
+                // insert object to the end of new scope and cleanup old one
+                if (($this->isColumnModified(CommentTableMap::REF) OR $this->isColumnModified(CommentTableMap::REF_ID)) && !$this->isColumnModified(CommentTableMap::RANK_COL)) { ChildCommentQuery::sortableShiftRank(-1, $this->getSortableRank() + 1, null, $this->oldScope, $con);
+                    $this->insertAtBottom($con);
+                }
+
             }
             if ($ret) {
                 $affectedRows = $this->doSave($con);
@@ -1313,6 +1393,9 @@ abstract class Comment implements ActiveRecordInterface
         if ($this->isColumnModified(CommentTableMap::UPDATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'UPDATED_AT';
         }
+        if ($this->isColumnModified(CommentTableMap::SORTABLE_RANK)) {
+            $modifiedColumns[':p' . $index++]  = 'SORTABLE_RANK';
+        }
 
         $sql = sprintf(
             'INSERT INTO comment (%s) VALUES (%s)',
@@ -1368,6 +1451,9 @@ abstract class Comment implements ActiveRecordInterface
                         break;
                     case 'UPDATED_AT':
                         $stmt->bindValue($identifier, $this->updated_at ? $this->updated_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
+                        break;
+                    case 'SORTABLE_RANK':
+                        $stmt->bindValue($identifier, $this->sortable_rank, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -1476,6 +1562,9 @@ abstract class Comment implements ActiveRecordInterface
             case 14:
                 return $this->getUpdatedAt();
                 break;
+            case 15:
+                return $this->getSortableRank();
+                break;
             default:
                 return null;
                 break;
@@ -1520,6 +1609,7 @@ abstract class Comment implements ActiveRecordInterface
             $keys[12] => $this->getLocale(),
             $keys[13] => $this->getCreatedAt(),
             $keys[14] => $this->getUpdatedAt(),
+            $keys[15] => $this->getSortableRank(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1609,6 +1699,9 @@ abstract class Comment implements ActiveRecordInterface
             case 14:
                 $this->setUpdatedAt($value);
                 break;
+            case 15:
+                $this->setSortableRank($value);
+                break;
         } // switch()
     }
 
@@ -1648,6 +1741,7 @@ abstract class Comment implements ActiveRecordInterface
         if (array_key_exists($keys[12], $arr)) $this->setLocale($arr[$keys[12]]);
         if (array_key_exists($keys[13], $arr)) $this->setCreatedAt($arr[$keys[13]]);
         if (array_key_exists($keys[14], $arr)) $this->setUpdatedAt($arr[$keys[14]]);
+        if (array_key_exists($keys[15], $arr)) $this->setSortableRank($arr[$keys[15]]);
     }
 
     /**
@@ -1674,6 +1768,7 @@ abstract class Comment implements ActiveRecordInterface
         if ($this->isColumnModified(CommentTableMap::LOCALE)) $criteria->add(CommentTableMap::LOCALE, $this->locale);
         if ($this->isColumnModified(CommentTableMap::CREATED_AT)) $criteria->add(CommentTableMap::CREATED_AT, $this->created_at);
         if ($this->isColumnModified(CommentTableMap::UPDATED_AT)) $criteria->add(CommentTableMap::UPDATED_AT, $this->updated_at);
+        if ($this->isColumnModified(CommentTableMap::SORTABLE_RANK)) $criteria->add(CommentTableMap::SORTABLE_RANK, $this->sortable_rank);
 
         return $criteria;
     }
@@ -1751,6 +1846,7 @@ abstract class Comment implements ActiveRecordInterface
         $copyObj->setLocale($this->getLocale());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
+        $copyObj->setSortableRank($this->getSortableRank());
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1850,6 +1946,7 @@ abstract class Comment implements ActiveRecordInterface
         $this->locale = null;
         $this->created_at = null;
         $this->updated_at = null;
+        $this->sortable_rank = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->applyDefaultValues();
@@ -1897,6 +1994,412 @@ abstract class Comment implements ActiveRecordInterface
         $this->modifiedColumns[CommentTableMap::UPDATED_AT] = true;
 
         return $this;
+    }
+
+    // sortable behavior
+
+    /**
+     * Wrap the getter for rank value
+     *
+     * @return    int
+     */
+    public function getRank()
+    {
+        return $this->sortable_rank;
+    }
+
+    /**
+     * Wrap the setter for rank value
+     *
+     * @param     int
+     * @return    ChildComment
+     */
+    public function setRank($v)
+    {
+        return $this->setSortableRank($v);
+    }
+
+    /**
+     * Wrap the getter for scope value
+     *
+     * @param boolean $returnNulls If true and all scope values are null, this will return null instead of a array full with nulls
+     *
+     * @return    mixed A array or a native type
+     */
+    public function getScopeValue($returnNulls = true)
+    {
+
+        $result = array();
+        $onlyNulls = true;
+
+        $onlyNulls &= null === ($result[] = $this->getRef());
+
+        $onlyNulls &= null === ($result[] = $this->getRefId());
+
+
+        return $onlyNulls && $returnNulls ? null : $result;
+
+    }
+
+    /**
+     * Wrap the setter for scope value
+     *
+     * @param     mixed A array or a native type
+     * @return    ChildComment
+     */
+    public function setScopeValue($v)
+    {
+
+        $this->setRef($v === null ? null : $v[0]);
+
+        $this->setRefId($v === null ? null : $v[1]);
+
+    }
+
+    /**
+     * Check if the object is first in the list, i.e. if it has 1 for rank
+     *
+     * @return    boolean
+     */
+    public function isFirst()
+    {
+        return $this->getSortableRank() == 1;
+    }
+
+    /**
+     * Check if the object is last in the list, i.e. if its rank is the highest rank
+     *
+     * @param     ConnectionInterface  $con      optional connection
+     *
+     * @return    boolean
+     */
+    public function isLast(ConnectionInterface $con = null)
+    {
+        return $this->getSortableRank() == ChildCommentQuery::create()->getMaxRankArray($this->getScopeValue(), $con);
+    }
+
+    /**
+     * Get the next item in the list, i.e. the one for which rank is immediately higher
+     *
+     * @param     ConnectionInterface  $con      optional connection
+     *
+     * @return    ChildComment
+     */
+    public function getNext(ConnectionInterface $con = null)
+    {
+
+        $query = ChildCommentQuery::create();
+
+        $scope = $this->getScopeValue();
+
+        $scopeRef = $scope[0];
+        $scopeRefId = $scope[1];
+
+
+        $query->filterByRank($this->getSortableRank() + 1, $scopeRef, $scopeRefId);
+
+
+        return $query->findOne($con);
+    }
+
+    /**
+     * Get the previous item in the list, i.e. the one for which rank is immediately lower
+     *
+     * @param     ConnectionInterface  $con      optional connection
+     *
+     * @return    ChildComment
+     */
+    public function getPrevious(ConnectionInterface $con = null)
+    {
+
+        $query = ChildCommentQuery::create();
+
+        $scope = $this->getScopeValue();
+
+        $scopeRef = $scope[0];
+        $scopeRefId = $scope[1];
+
+
+        $query->filterByRank($this->getSortableRank() - 1, $scopeRef, $scopeRefId);
+
+
+        return $query->findOne($con);
+    }
+
+    /**
+     * Insert at specified rank
+     * The modifications are not persisted until the object is saved.
+     *
+     * @param     integer    $rank rank value
+     * @param     ConnectionInterface  $con      optional connection
+     *
+     * @return    ChildComment the current object
+     *
+     * @throws    PropelException
+     */
+    public function insertAtRank($rank, ConnectionInterface $con = null)
+    {
+        $maxRank = ChildCommentQuery::create()->getMaxRankArray($this->getScopeValue(), $con);
+        if ($rank < 1 || $rank > $maxRank + 1) {
+            throw new PropelException('Invalid rank ' . $rank);
+        }
+        // move the object in the list, at the given rank
+        $this->setSortableRank($rank);
+        if ($rank != $maxRank + 1) {
+            // Keep the list modification query for the save() transaction
+            $this->sortableQueries []= array(
+                'callable'  => array('\Comment\Model\CommentQuery', 'sortableShiftRank'),
+                'arguments' => array(1, $rank, null, $this->getScopeValue())
+            );
+        }
+
+        return $this;
+    }
+
+    /**
+     * Insert in the last rank
+     * The modifications are not persisted until the object is saved.
+     *
+     * @param ConnectionInterface $con optional connection
+     *
+     * @return    ChildComment the current object
+     *
+     * @throws    PropelException
+     */
+    public function insertAtBottom(ConnectionInterface $con = null)
+    {
+        $this->setSortableRank(ChildCommentQuery::create()->getMaxRankArray($this->getScopeValue(), $con) + 1);
+
+        return $this;
+    }
+
+    /**
+     * Insert in the first rank
+     * The modifications are not persisted until the object is saved.
+     *
+     * @return    ChildComment the current object
+     */
+    public function insertAtTop()
+    {
+        return $this->insertAtRank(1);
+    }
+
+    /**
+     * Move the object to a new rank, and shifts the rank
+     * Of the objects inbetween the old and new rank accordingly
+     *
+     * @param     integer   $newRank rank value
+     * @param     ConnectionInterface $con optional connection
+     *
+     * @return    ChildComment the current object
+     *
+     * @throws    PropelException
+     */
+    public function moveToRank($newRank, ConnectionInterface $con = null)
+    {
+        if ($this->isNew()) {
+            throw new PropelException('New objects cannot be moved. Please use insertAtRank() instead');
+        }
+        if (null === $con) {
+            $con = Propel::getServiceContainer()->getWriteConnection(CommentTableMap::DATABASE_NAME);
+        }
+        if ($newRank < 1 || $newRank > ChildCommentQuery::create()->getMaxRankArray($this->getScopeValue(), $con)) {
+            throw new PropelException('Invalid rank ' . $newRank);
+        }
+
+        $oldRank = $this->getSortableRank();
+        if ($oldRank == $newRank) {
+            return $this;
+        }
+
+        $con->beginTransaction();
+        try {
+            // shift the objects between the old and the new rank
+            $delta = ($oldRank < $newRank) ? -1 : 1;
+            ChildCommentQuery::sortableShiftRank($delta, min($oldRank, $newRank), max($oldRank, $newRank), $this->getScopeValue(), $con);
+
+            // move the object to its new rank
+            $this->setSortableRank($newRank);
+            $this->save($con);
+
+            $con->commit();
+
+            return $this;
+        } catch (Exception $e) {
+            $con->rollback();
+            throw $e;
+        }
+    }
+
+    /**
+     * Exchange the rank of the object with the one passed as argument, and saves both objects
+     *
+     * @param     ChildComment $object
+     * @param     ConnectionInterface $con optional connection
+     *
+     * @return    ChildComment the current object
+     *
+     * @throws Exception if the database cannot execute the two updates
+     */
+    public function swapWith($object, ConnectionInterface $con = null)
+    {
+        if (null === $con) {
+            $con = Propel::getServiceContainer()->getWriteConnection(CommentTableMap::DATABASE_NAME);
+        }
+        $con->beginTransaction();
+        try {
+            $oldScope = $this->getScopeValue();
+            $newScope = $object->getScopeValue();
+            if ($oldScope != $newScope) {
+                $this->setScopeValue($newScope);
+                $object->setScopeValue($oldScope);
+            }
+            $oldRank = $this->getSortableRank();
+            $newRank = $object->getSortableRank();
+
+            $this->setSortableRank($newRank);
+            $object->setSortableRank($oldRank);
+
+            $this->save($con);
+            $object->save($con);
+            $con->commit();
+
+            return $this;
+        } catch (Exception $e) {
+            $con->rollback();
+            throw $e;
+        }
+    }
+
+    /**
+     * Move the object higher in the list, i.e. exchanges its rank with the one of the previous object
+     *
+     * @param     ConnectionInterface $con optional connection
+     *
+     * @return    ChildComment the current object
+     */
+    public function moveUp(ConnectionInterface $con = null)
+    {
+        if ($this->isFirst()) {
+            return $this;
+        }
+        if (null === $con) {
+            $con = Propel::getServiceContainer()->getWriteConnection(CommentTableMap::DATABASE_NAME);
+        }
+        $con->beginTransaction();
+        try {
+            $prev = $this->getPrevious($con);
+            $this->swapWith($prev, $con);
+            $con->commit();
+
+            return $this;
+        } catch (Exception $e) {
+            $con->rollback();
+            throw $e;
+        }
+    }
+
+    /**
+     * Move the object higher in the list, i.e. exchanges its rank with the one of the next object
+     *
+     * @param     ConnectionInterface $con optional connection
+     *
+     * @return    ChildComment the current object
+     */
+    public function moveDown(ConnectionInterface $con = null)
+    {
+        if ($this->isLast($con)) {
+            return $this;
+        }
+        if (null === $con) {
+            $con = Propel::getServiceContainer()->getWriteConnection(CommentTableMap::DATABASE_NAME);
+        }
+        $con->beginTransaction();
+        try {
+            $next = $this->getNext($con);
+            $this->swapWith($next, $con);
+            $con->commit();
+
+            return $this;
+        } catch (Exception $e) {
+            $con->rollback();
+            throw $e;
+        }
+    }
+
+    /**
+     * Move the object to the top of the list
+     *
+     * @param     ConnectionInterface $con optional connection
+     *
+     * @return    ChildComment the current object
+     */
+    public function moveToTop(ConnectionInterface $con = null)
+    {
+        if ($this->isFirst()) {
+            return $this;
+        }
+
+        return $this->moveToRank(1, $con);
+    }
+
+    /**
+     * Move the object to the bottom of the list
+     *
+     * @param     ConnectionInterface $con optional connection
+     *
+     * @return integer the old object's rank
+     */
+    public function moveToBottom(ConnectionInterface $con = null)
+    {
+        if ($this->isLast($con)) {
+            return false;
+        }
+        if (null === $con) {
+            $con = Propel::getServiceContainer()->getWriteConnection(CommentTableMap::DATABASE_NAME);
+        }
+        $con->beginTransaction();
+        try {
+            $bottom = ChildCommentQuery::create()->getMaxRankArray($this->getScopeValue(), $con);
+            $res = $this->moveToRank($bottom, $con);
+            $con->commit();
+
+            return $res;
+        } catch (Exception $e) {
+            $con->rollback();
+            throw $e;
+        }
+    }
+
+    /**
+     * Removes the current object from the list (moves it to the null scope).
+     * The modifications are not persisted until the object is saved.
+     *
+     * @return    ChildComment the current object
+     */
+    public function removeFromList()
+    {
+        // check if object is already removed
+        if ($this->getScopeValue() === null) {
+            throw new PropelException('Object is already removed (has null scope)');
+        }
+
+        // move the object to the end of null scope
+        $this->setScopeValue(null);
+
+        return $this;
+    }
+
+    /**
+     * Execute queries that were saved to be run inside the save transaction
+     */
+    protected function processSortableQueries($con)
+    {
+        foreach ($this->sortableQueries as $query) {
+            $query['arguments'][]= $con;
+            call_user_func_array($query['callable'], $query['arguments']);
+        }
+        $this->sortableQueries = array();
     }
 
     /**

@@ -37,6 +37,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildCommentQuery orderByLocale($order = Criteria::ASC) Order by the locale column
  * @method     ChildCommentQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildCommentQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
+ * @method     ChildCommentQuery orderBySortableRank($order = Criteria::ASC) Order by the sortable_rank column
  *
  * @method     ChildCommentQuery groupById() Group by the id column
  * @method     ChildCommentQuery groupByUsername() Group by the username column
@@ -53,6 +54,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildCommentQuery groupByLocale() Group by the locale column
  * @method     ChildCommentQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildCommentQuery groupByUpdatedAt() Group by the updated_at column
+ * @method     ChildCommentQuery groupBySortableRank() Group by the sortable_rank column
  *
  * @method     ChildCommentQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildCommentQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -80,6 +82,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildComment findOneByLocale(string $locale) Return the first ChildComment filtered by the locale column
  * @method     ChildComment findOneByCreatedAt(string $created_at) Return the first ChildComment filtered by the created_at column
  * @method     ChildComment findOneByUpdatedAt(string $updated_at) Return the first ChildComment filtered by the updated_at column
+ * @method     ChildComment findOneBySortableRank(int $sortable_rank) Return the first ChildComment filtered by the sortable_rank column
  *
  * @method     array findById(int $id) Return ChildComment objects filtered by the id column
  * @method     array findByUsername(string $username) Return ChildComment objects filtered by the username column
@@ -96,6 +99,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     array findByLocale(string $locale) Return ChildComment objects filtered by the locale column
  * @method     array findByCreatedAt(string $created_at) Return ChildComment objects filtered by the created_at column
  * @method     array findByUpdatedAt(string $updated_at) Return ChildComment objects filtered by the updated_at column
+ * @method     array findBySortableRank(int $sortable_rank) Return ChildComment objects filtered by the sortable_rank column
  *
  */
 abstract class CommentQuery extends ModelCriteria
@@ -184,7 +188,7 @@ abstract class CommentQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT ID, USERNAME, CUSTOMER_ID, REF, REF_ID, EMAIL, TITLE, CONTENT, RATING, STATUS, VERIFIED, ABUSE, LOCALE, CREATED_AT, UPDATED_AT FROM comment WHERE ID = :p0';
+        $sql = 'SELECT ID, USERNAME, CUSTOMER_ID, REF, REF_ID, EMAIL, TITLE, CONTENT, RATING, STATUS, VERIFIED, ABUSE, LOCALE, CREATED_AT, UPDATED_AT, SORTABLE_RANK FROM comment WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -823,6 +827,47 @@ abstract class CommentQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the sortable_rank column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterBySortableRank(1234); // WHERE sortable_rank = 1234
+     * $query->filterBySortableRank(array(12, 34)); // WHERE sortable_rank IN (12, 34)
+     * $query->filterBySortableRank(array('min' => 12)); // WHERE sortable_rank > 12
+     * </code>
+     *
+     * @param     mixed $sortableRank The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildCommentQuery The current query, for fluid interface
+     */
+    public function filterBySortableRank($sortableRank = null, $comparison = null)
+    {
+        if (is_array($sortableRank)) {
+            $useMinMax = false;
+            if (isset($sortableRank['min'])) {
+                $this->addUsingAlias(CommentTableMap::SORTABLE_RANK, $sortableRank['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($sortableRank['max'])) {
+                $this->addUsingAlias(CommentTableMap::SORTABLE_RANK, $sortableRank['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(CommentTableMap::SORTABLE_RANK, $sortableRank, $comparison);
+    }
+
+    /**
      * Filter the query by a related \Comment\Model\Thelia\Model\Customer object
      *
      * @param \Comment\Model\Thelia\Model\Customer|ObjectCollection $customer The related object(s) to use as filter
@@ -1052,6 +1097,342 @@ abstract class CommentQuery extends ModelCriteria
     public function firstCreatedFirst()
     {
         return $this->addAscendingOrderByColumn(CommentTableMap::CREATED_AT);
+    }
+
+    // sortable behavior
+
+    /**
+     * Returns the objects in a certain list, from the list scope
+     *
+     * @param     string $scopeRef Scope value for column `Ref`
+     * @param     int $scopeRefId Scope value for column `RefId`
+     *
+     * @return    ChildCommentQuery The current query, for fluid interface
+     */
+    public function inList($scopeRef = null, $scopeRefId = null)
+    {
+
+        $scope[] = $scopeRef;
+        $scope[] = $scopeRefId;
+
+
+        static::sortableApplyScopeCriteria($this, $scope, 'addUsingAlias');
+
+        return $this;
+    }
+
+    /**
+     * Filter the query based on a rank in the list
+     *
+     * @param     integer   $rank rank
+     * @param     string $scopeRef Scope value for column `Ref`
+     * @param     int $scopeRefId Scope value for column `RefId`
+
+     *
+     * @return    ChildCommentQuery The current query, for fluid interface
+     */
+    public function filterByRank($rank, $scopeRef = null, $scopeRefId = null)
+    {
+
+        return $this
+            ->inList($scopeRef, $scopeRefId)
+            ->addUsingAlias(CommentTableMap::RANK_COL, $rank, Criteria::EQUAL);
+    }
+
+    /**
+     * Order the query based on the rank in the list.
+     * Using the default $order, returns the item with the lowest rank first
+     *
+     * @param     string $order either Criteria::ASC (default) or Criteria::DESC
+     *
+     * @return    ChildCommentQuery The current query, for fluid interface
+     */
+    public function orderByRank($order = Criteria::ASC)
+    {
+        $order = strtoupper($order);
+        switch ($order) {
+            case Criteria::ASC:
+                return $this->addAscendingOrderByColumn($this->getAliasedColName(CommentTableMap::RANK_COL));
+                break;
+            case Criteria::DESC:
+                return $this->addDescendingOrderByColumn($this->getAliasedColName(CommentTableMap::RANK_COL));
+                break;
+            default:
+                throw new \Propel\Runtime\Exception\PropelException('ChildCommentQuery::orderBy() only accepts "asc" or "desc" as argument');
+        }
+    }
+
+    /**
+     * Get an item from the list based on its rank
+     *
+     * @param     integer   $rank rank
+     * @param     string $scopeRef Scope value for column `Ref`
+     * @param     int $scopeRefId Scope value for column `RefId`
+     * @param     ConnectionInterface $con optional connection
+     *
+     * @return    ChildComment
+     */
+    public function findOneByRank($rank, $scopeRef = null, $scopeRefId = null, ConnectionInterface $con = null)
+    {
+
+        return $this
+            ->filterByRank($rank, $scopeRef, $scopeRefId)
+            ->findOne($con);
+    }
+
+    /**
+     * Returns a list of objects
+     *
+     * @param     string $scopeRef Scope value for column `Ref`
+     * @param     int $scopeRefId Scope value for column `RefId`
+
+     * @param      ConnectionInterface $con    Connection to use.
+     *
+     * @return     mixed the list of results, formatted by the current formatter
+     */
+    public function findList($scopeRef = null, $scopeRefId = null, $con = null)
+    {
+
+        return $this
+            ->inList($scopeRef, $scopeRefId)
+            ->orderByRank()
+            ->find($con);
+    }
+
+    /**
+     * Get the highest rank
+     *
+     * @param     string $scopeRef Scope value for column `Ref`
+     * @param     int $scopeRefId Scope value for column `RefId`
+     * @param     ConnectionInterface optional connection
+     *
+     * @return    integer highest position
+     */
+    public function getMaxRank($scopeRef = null, $scopeRefId = null, ConnectionInterface $con = null)
+    {
+        if (null === $con) {
+            $con = Propel::getServiceContainer()->getReadConnection(CommentTableMap::DATABASE_NAME);
+        }
+        // shift the objects with a position lower than the one of object
+        $this->addSelectColumn('MAX(' . CommentTableMap::RANK_COL . ')');
+
+        $scope[] = $scopeRef;
+        $scope[] = $scopeRefId;
+
+
+                static::sortableApplyScopeCriteria($this, $scope);
+        $stmt = $this->doSelect($con);
+
+        return $stmt->fetchColumn();
+    }
+
+    /**
+     * Get the highest rank by a scope with a array format.
+     *
+     * @param     mixed $scope      The scope value as scalar type or array($value1, ...).
+
+     * @param     ConnectionInterface optional connection
+     *
+     * @return    integer highest position
+     */
+    public function getMaxRankArray($scope, ConnectionInterface $con = null)
+    {
+        if ($con === null) {
+            $con = Propel::getConnection(CommentTableMap::DATABASE_NAME);
+        }
+        // shift the objects with a position lower than the one of object
+        $this->addSelectColumn('MAX(' . CommentTableMap::RANK_COL . ')');
+        static::sortableApplyScopeCriteria($this, $scope);
+        $stmt = $this->doSelect($con);
+
+        return $stmt->fetchColumn();
+    }
+
+    /**
+     * Get an item from the list based on its rank
+     *
+     * @param     integer   $rank rank
+     * @param      int $scope        Scope to determine which suite to consider
+     * @param     ConnectionInterface $con optional connection
+     *
+     * @return ChildComment
+     */
+    static public function retrieveByRank($rank, $scope = null, ConnectionInterface $con = null)
+    {
+        if (null === $con) {
+            $con = Propel::getServiceContainer()->getReadConnection(CommentTableMap::DATABASE_NAME);
+        }
+
+        $c = new Criteria;
+        $c->add(CommentTableMap::RANK_COL, $rank);
+                static::sortableApplyScopeCriteria($c, $scope);
+
+        return static::create(null, $c)->findOne($con);
+    }
+
+    /**
+     * Reorder a set of sortable objects based on a list of id/position
+     * Beware that there is no check made on the positions passed
+     * So incoherent positions will result in an incoherent list
+     *
+     * @param     mixed               $order id => rank pairs
+     * @param     ConnectionInterface $con   optional connection
+     *
+     * @return    boolean true if the reordering took place, false if a database problem prevented it
+     */
+    public function reorder($order, ConnectionInterface $con = null)
+    {
+        if (null === $con) {
+            $con = Propel::getServiceContainer()->getReadConnection(CommentTableMap::DATABASE_NAME);
+        }
+
+        $con->beginTransaction();
+        try {
+            $ids = array_keys($order);
+            $objects = $this->findPks($ids, $con);
+            foreach ($objects as $object) {
+                $pk = $object->getPrimaryKey();
+                if ($object->getSortableRank() != $order[$pk]) {
+                    $object->setSortableRank($order[$pk]);
+                    $object->save($con);
+                }
+            }
+            $con->commit();
+
+            return true;
+        } catch (\Propel\Runtime\Exception\PropelException $e) {
+            $con->rollback();
+            throw $e;
+        }
+    }
+
+    /**
+     * Return an array of sortable objects ordered by position
+     *
+     * @param     Criteria  $criteria  optional criteria object
+     * @param     string    $order     sorting order, to be chosen between Criteria::ASC (default) and Criteria::DESC
+     * @param     ConnectionInterface $con       optional connection
+     *
+     * @return    array list of sortable objects
+     */
+    static public function doSelectOrderByRank(Criteria $criteria = null, $order = Criteria::ASC, ConnectionInterface $con = null)
+    {
+        if (null === $con) {
+            $con = Propel::getServiceContainer()->getReadConnection(CommentTableMap::DATABASE_NAME);
+        }
+
+        if (null === $criteria) {
+            $criteria = new Criteria();
+        } elseif ($criteria instanceof Criteria) {
+            $criteria = clone $criteria;
+        }
+
+        $criteria->clearOrderByColumns();
+
+        if (Criteria::ASC == $order) {
+            $criteria->addAscendingOrderByColumn(CommentTableMap::RANK_COL);
+        } else {
+            $criteria->addDescendingOrderByColumn(CommentTableMap::RANK_COL);
+        }
+
+        return ChildCommentQuery::create(null, $criteria)->find($con);
+    }
+
+    /**
+     * Return an array of sortable objects in the given scope ordered by position
+     *
+     * @param     int       $scope  the scope of the list
+     * @param     string    $order  sorting order, to be chosen between Criteria::ASC (default) and Criteria::DESC
+     * @param     ConnectionInterface $con    optional connection
+     *
+     * @return    array list of sortable objects
+     */
+    static public function retrieveList($scope, $order = Criteria::ASC, ConnectionInterface $con = null)
+    {
+        $c = new Criteria();
+        static::sortableApplyScopeCriteria($c, $scope);
+
+        return ChildCommentQuery::doSelectOrderByRank($c, $order, $con);
+    }
+
+    /**
+     * Return the number of sortable objects in the given scope
+     *
+     * @param     int       $scope  the scope of the list
+     * @param     ConnectionInterface $con    optional connection
+     *
+     * @return    array list of sortable objects
+     */
+    static public function countList($scope, ConnectionInterface $con = null)
+    {
+        $c = new Criteria();
+        $c->add(CommentTableMap::SCOPE_COL, $scope);
+
+        return ChildCommentQuery::create(null, $c)->count($con);
+    }
+
+    /**
+     * Deletes the sortable objects in the given scope
+     *
+     * @param     int       $scope  the scope of the list
+     * @param     ConnectionInterface $con    optional connection
+     *
+     * @return    int number of deleted objects
+     */
+    static public function deleteList($scope, ConnectionInterface $con = null)
+    {
+        $c = new Criteria();
+        static::sortableApplyScopeCriteria($c, $scope);
+
+        return CommentTableMap::doDelete($c, $con);
+    }
+
+    /**
+     * Applies all scope fields to the given criteria.
+     *
+     * @param  Criteria $criteria Applies the values directly to this criteria.
+     * @param  mixed    $scope    The scope value as scalar type or array($value1, ...).
+     * @param  string   $method   The method we use to apply the values.
+     *
+     */
+    static public function sortableApplyScopeCriteria(Criteria $criteria, $scope, $method = 'add')
+    {
+
+        $criteria->$method(CommentTableMap::REF, $scope[0], Criteria::EQUAL);
+
+        $criteria->$method(CommentTableMap::REF_ID, $scope[1], Criteria::EQUAL);
+
+    }
+
+    /**
+     * Adds $delta to all Rank values that are >= $first and <= $last.
+     * '$delta' can also be negative.
+     *
+     * @param      int $delta Value to be shifted by, can be negative
+     * @param      int $first First node to be shifted
+     * @param      int $last  Last node to be shifted
+     * @param      int $scope Scope to use for the shift
+     * @param      ConnectionInterface $con Connection to use.
+     */
+    static public function sortableShiftRank($delta, $first, $last = null, $scope = null, ConnectionInterface $con = null)
+    {
+        if (null === $con) {
+            $con = Propel::getServiceContainer()->getWriteConnection(CommentTableMap::DATABASE_NAME);
+        }
+
+        $whereCriteria = new Criteria(CommentTableMap::DATABASE_NAME);
+        $criterion = $whereCriteria->getNewCriterion(CommentTableMap::RANK_COL, $first, Criteria::GREATER_EQUAL);
+        if (null !== $last) {
+            $criterion->addAnd($whereCriteria->getNewCriterion(CommentTableMap::RANK_COL, $last, Criteria::LESS_EQUAL));
+        }
+        $whereCriteria->add($criterion);
+                static::sortableApplyScopeCriteria($whereCriteria, $scope);
+
+        $valuesCriteria = new Criteria(CommentTableMap::DATABASE_NAME);
+        $valuesCriteria->add(CommentTableMap::RANK_COL, array('raw' => CommentTableMap::RANK_COL . ' + ?', 'value' => $delta), Criteria::CUSTOM_EQUAL);
+
+        $whereCriteria->doUpdate($valuesCriteria, $con);
+        CommentTableMap::clearInstancePool();
     }
 
 } // CommentQuery
