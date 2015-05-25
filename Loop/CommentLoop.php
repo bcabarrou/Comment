@@ -70,7 +70,9 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
                             'created',
                             'created_reverse',
                             'updated',
-                            'updated_reverse'
+                            'updated_reverse',
+                            'manual',
+                            'manual_reverse',
                         ]
                     )
                 ),
@@ -176,6 +178,12 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
                     case "updated_reverse":
                         $search->addDescendingOrderByColumn('updated_at');
                         break;
+                    case "manual_reverse":
+                        $search->orderBySortableRank(Criteria::DESC);
+                        break;
+                    case "manual":
+                    default:
+                        $search->orderBySortableRank(Criteria::ASC);
                 }
             }
         }
@@ -206,7 +214,8 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
                 ->set('RATING', $comment->getRating())
                 ->set('STATUS', $comment->getStatus())
                 ->set('VERIFIED', $comment->getVerified())
-                ->set('ABUSE', $comment->getAbuse());
+                ->set('ABUSE', $comment->getAbuse())
+                ->set('POSITION', $comment->getSortableRank());
 
             if (1 == $this->getLoadRef()) {
                 // dispatch event to get the reference element
