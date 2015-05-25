@@ -45,6 +45,8 @@ use Propel\Runtime\ActiveQuery\Join;
 use Propel\Runtime\Exception\PropelException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Translation\TranslatorInterface;
+use Thelia\Action\BaseAction;
+use Thelia\Core\Event\UpdatePositionEvent;
 use Thelia\Core\Template\ParserInterface;
 use Thelia\Core\Translation\Translator;
 use Thelia\Log\Tlog;
@@ -75,7 +77,7 @@ use Thelia\Tools\URL;
  * @package Comment\Action
  * @author Michaël Espeche <michael.espeche@gmail.com>
  */
-class CommentAction implements EventSubscriberInterface
+class CommentAction extends BaseAction implements EventSubscriberInterface
 {
     /** @var null|TranslatorInterface */
     protected $translator = null;
@@ -195,6 +197,28 @@ class CommentAction implements EventSubscriberInterface
                 );
             }
         }
+    }
+
+    public function updatePosition(UpdatePositionEvent $event)
+    {
+        $comment = CommentQuery::create()->findPk($event->getObjectId());
+        if ($comment === null) {
+            return;
+        }
+
+        switch ($event->getMode()) {
+            case UpdatePositionEvent::POSITION_UP:
+                $comment->moveUp();
+                break;
+            case UpdatePositionEvent::POSITION_DOWN:
+                $comment->moveDown();
+                break;
+            case UpdatePositionEvent::POSITION_ABSOLUTE:
+                $comment->moveToRank($event->getPosition());
+                break;
+        }
+
+        $comment->save();
     }
 
     /**
@@ -777,6 +801,7 @@ class CommentAction implements EventSubscriberInterface
             CommentEvents::COMMENT_UPDATE => ['update', 128],
             CommentEvents::COMMENT_ABUSE => ['abuse', 128],
             CommentEvents::COMMENT_STATUS_UPDATE => ['statusChange', 128],
+            CommentEvents::COMMENT_POSITION_UPDATE => ['updatePosition', 128],
             CommentEvents::COMMENT_RATING_COMPUTE => ['productRatingCompute', 128],
             CommentEvents::COMMENT_REFERENCE_GETTER => ['getRefrence', 128],
             CommentEvents::COMMENT_CUSTOMER_DEMAND => ['requestCustomerDemand', 128],
