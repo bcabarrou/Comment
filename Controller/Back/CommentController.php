@@ -64,7 +64,7 @@ class CommentController extends AbstractCrudController
             CommentEvents::COMMENT_UPDATE,
             CommentEvents::COMMENT_DELETE,
             null, // No visibility toggle
-            null, // no position change
+            CommentEvents::COMMENT_POSITION_UPDATE,
             Comment::getModuleCode()
         );
     }
