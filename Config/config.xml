@@ -6,6 +6,7 @@
 
     <loops>
         <loop name="comment" class="Comment\Loop\CommentLoop" />
+        <loop name="comment-meta" class="Comment\Loop\CommentMetaLoop" />
     </loops>
 
     <forms>        
