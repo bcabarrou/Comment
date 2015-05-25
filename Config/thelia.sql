@@ -26,6 +26,7 @@ CREATE TABLE `comment`
     `locale` VARCHAR(10),
     `created_at` DATETIME,
     `updated_at` DATETIME,
+    `sortable_rank` INTEGER,
     PRIMARY KEY (`id`),
     INDEX `idx_comment_user_id` (`customer_id`),
     CONSTRAINT `fk_comment_customer_id`
