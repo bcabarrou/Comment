@@ -25,6 +25,7 @@ return array(
     'Edit comment %name' => 'Modifier le commentaire %name',
     'Editing comment "%name"' => 'Edition du commentaire "%name"',
     'Error' => 'Erreur',
+    'Featured' => 'Mis en avant',
     'Filter' => 'Filtrer',
     'Home' => 'Accueil',
     'ID' => 'ID',

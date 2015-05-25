@@ -60,7 +60,8 @@ The module provides a new loop : **comment**
 |**status**   | the status of the comment : 0 = pending, 1 = accepted |                                             
 |**verified** | the customer has bought the product                   |                               
 |**locale**   | the locale of the comment : fr_FR                     |                          
-|**load_ref** | load or not the reference object. default = 0         |                                        
+|**load_ref** | load or not the reference object. default = 0         |
+|**featured** | the comment is featured                               |
 
 ### Output arguments
 
@@ -77,7 +78,8 @@ The module provides a new loop : **comment**
 |$RATING      | the rating                                                                 |                                                                      
 |$STATUS      | the status :  : 0 = pending, 1 = accepted                                  |                                                                                                      
 |$VERIFIED    | 0 : not verified / not applicable, 1 = the customer has bought the product |                                                                                                                                        
-|$ABUSE       | an abuse counter.                                                          |                                                                             
+|$ABUSE       | an abuse counter.                                                          |
+|$FEATURED    | whether the comment is featured
 
 ## how to get the rating of a product
 

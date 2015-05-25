@@ -58,6 +58,9 @@ class CommentCreateEvent extends CommentEvent
     /** @var int */
     protected $abuse;
 
+    /** @var boolean */
+    protected $featured;
+
     /**
      * @return int
      */
@@ -264,6 +267,25 @@ class CommentCreateEvent extends CommentEvent
     public function setVerified($verified)
     {
         $this->verified = $verified;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isFeatured()
+    {
+        return $this->featured;
+    }
+
+    /**
+     * @param boolean $featured
+     * @return CommentCreateEvent
+     */
+    public function setFeatured($featured)
+    {
+        $this->featured = $featured;
 
         return $this;
     }

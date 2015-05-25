@@ -103,6 +103,7 @@ class CommentAction implements EventSubscriberInterface
             ->setVerified($event->isVerified())
             ->setRating($event->getRating())
             ->setAbuse($event->getAbuse())
+            ->setFeatured($event->isFeatured())
             ->save();
 
         $event->setComment($comment);
@@ -132,6 +133,7 @@ class CommentAction implements EventSubscriberInterface
                 ->setVerified($event->isVerified())
                 ->setRating($event->getRating())
                 ->setAbuse($event->getAbuse())
+                ->setFeatured($event->isFeatured())
                 ->save();
             $event->setComment($comment);
 

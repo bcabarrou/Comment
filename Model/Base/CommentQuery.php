@@ -34,6 +34,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildCommentQuery orderByStatus($order = Criteria::ASC) Order by the status column
  * @method     ChildCommentQuery orderByVerified($order = Criteria::ASC) Order by the verified column
  * @method     ChildCommentQuery orderByAbuse($order = Criteria::ASC) Order by the abuse column
+ * @method     ChildCommentQuery orderByFeatured($order = Criteria::ASC) Order by the featured column
  * @method     ChildCommentQuery orderByLocale($order = Criteria::ASC) Order by the locale column
  * @method     ChildCommentQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildCommentQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
@@ -50,6 +51,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildCommentQuery groupByStatus() Group by the status column
  * @method     ChildCommentQuery groupByVerified() Group by the verified column
  * @method     ChildCommentQuery groupByAbuse() Group by the abuse column
+ * @method     ChildCommentQuery groupByFeatured() Group by the featured column
  * @method     ChildCommentQuery groupByLocale() Group by the locale column
  * @method     ChildCommentQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildCommentQuery groupByUpdatedAt() Group by the updated_at column
@@ -77,6 +79,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildComment findOneByStatus(int $status) Return the first ChildComment filtered by the status column
  * @method     ChildComment findOneByVerified(int $verified) Return the first ChildComment filtered by the verified column
  * @method     ChildComment findOneByAbuse(int $abuse) Return the first ChildComment filtered by the abuse column
+ * @method     ChildComment findOneByFeatured(boolean $featured) Return the first ChildComment filtered by the featured column
  * @method     ChildComment findOneByLocale(string $locale) Return the first ChildComment filtered by the locale column
  * @method     ChildComment findOneByCreatedAt(string $created_at) Return the first ChildComment filtered by the created_at column
  * @method     ChildComment findOneByUpdatedAt(string $updated_at) Return the first ChildComment filtered by the updated_at column
@@ -93,6 +96,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     array findByStatus(int $status) Return ChildComment objects filtered by the status column
  * @method     array findByVerified(int $verified) Return ChildComment objects filtered by the verified column
  * @method     array findByAbuse(int $abuse) Return ChildComment objects filtered by the abuse column
+ * @method     array findByFeatured(boolean $featured) Return ChildComment objects filtered by the featured column
  * @method     array findByLocale(string $locale) Return ChildComment objects filtered by the locale column
  * @method     array findByCreatedAt(string $created_at) Return ChildComment objects filtered by the created_at column
  * @method     array findByUpdatedAt(string $updated_at) Return ChildComment objects filtered by the updated_at column
@@ -184,7 +188,7 @@ abstract class CommentQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT ID, USERNAME, CUSTOMER_ID, REF, REF_ID, EMAIL, TITLE, CONTENT, RATING, STATUS, VERIFIED, ABUSE, LOCALE, CREATED_AT, UPDATED_AT FROM comment WHERE ID = :p0';
+        $sql = 'SELECT ID, USERNAME, CUSTOMER_ID, REF, REF_ID, EMAIL, TITLE, CONTENT, RATING, STATUS, VERIFIED, ABUSE, FEATURED, LOCALE, CREATED_AT, UPDATED_AT FROM comment WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -705,6 +709,33 @@ abstract class CommentQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(CommentTableMap::ABUSE, $abuse, $comparison);
+    }
+
+    /**
+     * Filter the query on the featured column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByFeatured(true); // WHERE featured = true
+     * $query->filterByFeatured('yes'); // WHERE featured = true
+     * </code>
+     *
+     * @param     boolean|string $featured The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildCommentQuery The current query, for fluid interface
+     */
+    public function filterByFeatured($featured = null, $comparison = null)
+    {
+        if (is_string($featured)) {
+            $featured = in_array(strtolower($featured), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+        }
+
+        return $this->addUsingAlias(CommentTableMap::FEATURED, $featured, $comparison);
     }
 
     /**

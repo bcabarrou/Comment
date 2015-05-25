@@ -54,6 +54,7 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
             Argument::createBooleanOrBothTypeArgument('verified', BooleanOrBothType::ANY),
             Argument::createAnyTypeArgument('locale'),
             Argument::createAnyTypeArgument('load_ref', 0),
+            Argument::createBooleanTypeArgument('featured', false),
             new Argument(
                 'order',
                 new Type\TypeCollection(
@@ -128,6 +129,11 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
         $locale = $this->getLocale();
         if (null !== $locale) {
             $search->filterByLocale($locale);
+        }
+
+        $featured = $this->getFeatured();
+        if (null !== $featured) {
+            $search->filterByFeatured($featured);
         }
 
         $orders = $this->getOrder();
@@ -206,7 +212,8 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
                 ->set('RATING', $comment->getRating())
                 ->set('STATUS', $comment->getStatus())
                 ->set('VERIFIED', $comment->getVerified())
-                ->set('ABUSE', $comment->getAbuse());
+                ->set('ABUSE', $comment->getAbuse())
+                ->set('FEATURED', $comment->getFeatured());
 
             if (1 == $this->getLoadRef()) {
                 // dispatch event to get the reference element
