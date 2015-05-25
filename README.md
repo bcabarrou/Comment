@@ -79,6 +79,7 @@ The module provides a new loop : **comment**
 |$STATUS      | the status :  : 0 = pending, 1 = accepted                                  |                                                                                                      
 |$VERIFIED    | 0 : not verified / not applicable, 1 = the customer has bought the product |                                                                                                                                        
 |$ABUSE       | an abuse counter.                                                          |                                                                             
+|$POSITION    | the position                                                               |
 
 ## how to get the rating of a product
 
