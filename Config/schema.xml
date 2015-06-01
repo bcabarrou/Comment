@@ -14,7 +14,8 @@
         <column name="status" type="TINYINT" default="0" />
         <column name="verified" type="TINYINT" />
         <column name="abuse" type="INTEGER" />
-        <column name="featured" type="BOOLEAN" default="false" />
+        <column name="featured" type="TINYINT" default="0" />
+        <column name="seen" type="TINYINT" default="0" />
         <column name="locale" size="10" type="VARCHAR" />
         <behavior name="timestampable" />
         <behavior name="sortable">

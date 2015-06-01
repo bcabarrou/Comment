@@ -237,6 +237,9 @@ class CommentController extends AbstractCrudController
      */
     protected function renderListTemplate($currentOrder)
     {
+        // mark all comments as seen
+        $this->dispatch(CommentEvents::COMMENT_SEEN, new CommentEvent());
+
         return $this->render('comments', ['order' => $currentOrder]);
     }
 
@@ -245,6 +248,15 @@ class CommentController extends AbstractCrudController
      */
     protected function renderEditionTemplate()
     {
+        $commentId = $this->getRequest()->get('comment_id');
+
+        // mark the comment as seen
+        if ($commentId !== null) {
+            $seenEvent = new CommentEvent();
+            $seenEvent->setId($commentId);
+            $this->dispatch(CommentEvents::COMMENT_SEEN, $seenEvent);
+        }
+
         return $this->render(
             'comment-edit',
             [

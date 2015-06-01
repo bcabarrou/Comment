@@ -7,6 +7,7 @@ return array(
     'Comment could not be removed. Please try later.' => 'Comment could not be removed. Please try later.',
     'Comment not activated on this element.' => 'Comment not activated on this element.',
     'Comments' => 'Comments',
+    'Comments (%unseen_comments)' => 'Comments (%unseen_comments)',
     'Comments are not validated automatically.' => 'Comments are not validated automatically.',
     'Content' => 'Content',
     'Customer' => 'Customer',

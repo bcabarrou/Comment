@@ -27,6 +27,7 @@ class CommentEvents
     const COMMENT_STATUS_UPDATE = "action.comment.status.update";
     const COMMENT_POSITION_UPDATE = "action.comment.position.update";
     const COMMENT_ABUSE = "action.comment.abuse";
+    const COMMENT_SEEN = "action.comment.seen";
     const COMMENT_RATING_COMPUTE = "action.comment.rating.compute";
     const COMMENT_REFERENCE_GETTER = "action.comment.reference.getter";
     const COMMENT_CUSTOMER_DEMAND = "action.comment.customer.demand";

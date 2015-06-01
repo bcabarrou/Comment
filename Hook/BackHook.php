@@ -14,6 +14,7 @@
 namespace Comment\Hook;
 
 use Comment\Comment;
+use Comment\Model\CommentQuery;
 use Thelia\Core\Event\Hook\HookRenderBlockEvent;
 use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Core\Hook\BaseHook;
@@ -41,12 +42,27 @@ class BackHook extends BaseHook
      */
     public function onMainTopMenuTools(HookRenderBlockEvent $event)
     {
+        $unseenCommentsCount = CommentQuery::create()->filterBySeen(0)->count();
+
+        if ($unseenCommentsCount === 0) {
+            $title = $this->trans('Comments', [], Comment::MESSAGE_DOMAIN);
+        } else {
+            $title = $this->trans(
+                'Comments (%unseen_comments)',
+                [
+                    '%unseen_comments' => $unseenCommentsCount,
+                ],
+                Comment::MESSAGE_DOMAIN
+            );
+        }
+
+
         $event->add(
             [
                 'id' => 'tools_menu_comment',
                 'class' => '',
                 'url' => URL::getInstance()->absoluteUrl('/admin/module/comments'),
-                'title' => $this->trans('Comments', [], Comment::MESSAGE_DOMAIN)
+                'title' => $title
             ]
         );
     }

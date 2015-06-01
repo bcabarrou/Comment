@@ -7,6 +7,7 @@ return array(
     'Comment could not be removed. Please try later.' => 'Le commentaire n\'a pas pu être supprimé. Veuillez ré-essayer plus tard.',
     'Comment not activated on this element.' => 'Les commentaires ne sont pas autorisés sur cet élément. ',
     'Comments' => 'Commentaires',
+    'Comments (%unseen_comments)' => 'Commentaires (%unseen_comments)',
     'Comments are not validated automatically.' => 'Les commentaires ne sont pas validés automatiquement.',
     'Content' => 'Message',
     'Customer' => 'Client',

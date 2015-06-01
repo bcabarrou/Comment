@@ -31,6 +31,7 @@ use Comment\Events\CommentComputeRatingEvent;
 use Comment\Events\CommentCreateEvent;
 use Comment\Events\CommentDefinitionEvent;
 use Comment\Events\CommentDeleteEvent;
+use Comment\Events\CommentEvent;
 use Comment\Events\CommentEvents;
 use Comment\Events\CommentReferenceGetterEvent;
 use Comment\Events\CommentUpdateEvent;
@@ -113,6 +114,7 @@ class CommentAction extends BaseAction implements EventSubscriberInterface
             ->setRating($event->getRating())
             ->setAbuse($event->getAbuse())
             ->setFeatured($event->isFeatured())
+            ->setSeen($event->isSeen())
             ->save();
 
         $event->setComment($comment);
@@ -143,6 +145,7 @@ class CommentAction extends BaseAction implements EventSubscriberInterface
                 ->setRating($event->getRating())
                 ->setAbuse($event->getAbuse())
                 ->setFeatured($event->isFeatured())
+                ->setSeen($event->isSeen())
                 ->save();
             $event->setComment($comment);
 
@@ -221,6 +224,25 @@ class CommentAction extends BaseAction implements EventSubscriberInterface
         }
 
         $comment->save();
+    }
+
+    /**
+     * Mark one comment (if an id is set in the event) or all comments as seen.
+     *
+     * @param CommentEvent $event Comment event
+     * @throws PropelException
+     */
+    public function seen(CommentEvent $event)
+    {
+        $query = CommentQuery::create()->filterBySeen(0);
+
+        if ($event->getId() !== null) {
+            $query->filterById($event->getId());
+        }
+
+        $query->update([
+            'Seen' => 1,
+        ]);
     }
 
     /**
@@ -804,6 +826,7 @@ class CommentAction extends BaseAction implements EventSubscriberInterface
             CommentEvents::COMMENT_ABUSE => ['abuse', 128],
             CommentEvents::COMMENT_STATUS_UPDATE => ['statusChange', 128],
             CommentEvents::COMMENT_POSITION_UPDATE => ['updatePosition', 128],
+            CommentEvents::COMMENT_SEEN => ['seen', 128],
             CommentEvents::COMMENT_RATING_COMPUTE => ['productRatingCompute', 128],
             CommentEvents::COMMENT_REFERENCE_GETTER => ['getRefrence', 128],
             CommentEvents::COMMENT_CUSTOMER_DEMAND => ['requestCustomerDemand', 128],

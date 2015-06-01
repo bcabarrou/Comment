@@ -35,6 +35,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildCommentQuery orderByVerified($order = Criteria::ASC) Order by the verified column
  * @method     ChildCommentQuery orderByAbuse($order = Criteria::ASC) Order by the abuse column
  * @method     ChildCommentQuery orderByFeatured($order = Criteria::ASC) Order by the featured column
+ * @method     ChildCommentQuery orderBySeen($order = Criteria::ASC) Order by the seen column
  * @method     ChildCommentQuery orderByLocale($order = Criteria::ASC) Order by the locale column
  * @method     ChildCommentQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildCommentQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
@@ -53,6 +54,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildCommentQuery groupByVerified() Group by the verified column
  * @method     ChildCommentQuery groupByAbuse() Group by the abuse column
  * @method     ChildCommentQuery groupByFeatured() Group by the featured column
+ * @method     ChildCommentQuery groupBySeen() Group by the seen column
  * @method     ChildCommentQuery groupByLocale() Group by the locale column
  * @method     ChildCommentQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildCommentQuery groupByUpdatedAt() Group by the updated_at column
@@ -81,7 +83,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildComment findOneByStatus(int $status) Return the first ChildComment filtered by the status column
  * @method     ChildComment findOneByVerified(int $verified) Return the first ChildComment filtered by the verified column
  * @method     ChildComment findOneByAbuse(int $abuse) Return the first ChildComment filtered by the abuse column
- * @method     ChildComment findOneByFeatured(boolean $featured) Return the first ChildComment filtered by the featured column
+ * @method     ChildComment findOneByFeatured(int $featured) Return the first ChildComment filtered by the featured column
+ * @method     ChildComment findOneBySeen(int $seen) Return the first ChildComment filtered by the seen column
  * @method     ChildComment findOneByLocale(string $locale) Return the first ChildComment filtered by the locale column
  * @method     ChildComment findOneByCreatedAt(string $created_at) Return the first ChildComment filtered by the created_at column
  * @method     ChildComment findOneByUpdatedAt(string $updated_at) Return the first ChildComment filtered by the updated_at column
@@ -99,7 +102,8 @@ use Propel\Runtime\Exception\PropelException;
  * @method     array findByStatus(int $status) Return ChildComment objects filtered by the status column
  * @method     array findByVerified(int $verified) Return ChildComment objects filtered by the verified column
  * @method     array findByAbuse(int $abuse) Return ChildComment objects filtered by the abuse column
- * @method     array findByFeatured(boolean $featured) Return ChildComment objects filtered by the featured column
+ * @method     array findByFeatured(int $featured) Return ChildComment objects filtered by the featured column
+ * @method     array findBySeen(int $seen) Return ChildComment objects filtered by the seen column
  * @method     array findByLocale(string $locale) Return ChildComment objects filtered by the locale column
  * @method     array findByCreatedAt(string $created_at) Return ChildComment objects filtered by the created_at column
  * @method     array findByUpdatedAt(string $updated_at) Return ChildComment objects filtered by the updated_at column
@@ -192,7 +196,7 @@ abstract class CommentQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT ID, USERNAME, CUSTOMER_ID, REF, REF_ID, EMAIL, TITLE, CONTENT, RATING, STATUS, VERIFIED, ABUSE, FEATURED, LOCALE, CREATED_AT, UPDATED_AT, SORTABLE_RANK FROM comment WHERE ID = :p0';
+        $sql = 'SELECT ID, USERNAME, CUSTOMER_ID, REF, REF_ID, EMAIL, TITLE, CONTENT, RATING, STATUS, VERIFIED, ABUSE, FEATURED, SEEN, LOCALE, CREATED_AT, UPDATED_AT, SORTABLE_RANK FROM comment WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -720,26 +724,81 @@ abstract class CommentQuery extends ModelCriteria
      *
      * Example usage:
      * <code>
-     * $query->filterByFeatured(true); // WHERE featured = true
-     * $query->filterByFeatured('yes'); // WHERE featured = true
+     * $query->filterByFeatured(1234); // WHERE featured = 1234
+     * $query->filterByFeatured(array(12, 34)); // WHERE featured IN (12, 34)
+     * $query->filterByFeatured(array('min' => 12)); // WHERE featured > 12
      * </code>
      *
-     * @param     boolean|string $featured The value to use as filter.
-     *              Non-boolean arguments are converted using the following rules:
-     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
-     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
-     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * @param     mixed $featured The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return ChildCommentQuery The current query, for fluid interface
      */
     public function filterByFeatured($featured = null, $comparison = null)
     {
-        if (is_string($featured)) {
-            $featured = in_array(strtolower($featured), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+        if (is_array($featured)) {
+            $useMinMax = false;
+            if (isset($featured['min'])) {
+                $this->addUsingAlias(CommentTableMap::FEATURED, $featured['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($featured['max'])) {
+                $this->addUsingAlias(CommentTableMap::FEATURED, $featured['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
         }
 
         return $this->addUsingAlias(CommentTableMap::FEATURED, $featured, $comparison);
+    }
+
+    /**
+     * Filter the query on the seen column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterBySeen(1234); // WHERE seen = 1234
+     * $query->filterBySeen(array(12, 34)); // WHERE seen IN (12, 34)
+     * $query->filterBySeen(array('min' => 12)); // WHERE seen > 12
+     * </code>
+     *
+     * @param     mixed $seen The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildCommentQuery The current query, for fluid interface
+     */
+    public function filterBySeen($seen = null, $comparison = null)
+    {
+        if (is_array($seen)) {
+            $useMinMax = false;
+            if (isset($seen['min'])) {
+                $this->addUsingAlias(CommentTableMap::SEEN, $seen['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($seen['max'])) {
+                $this->addUsingAlias(CommentTableMap::SEEN, $seen['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(CommentTableMap::SEEN, $seen, $comparison);
     }
 
     /**

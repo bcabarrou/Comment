@@ -61,6 +61,9 @@ class CommentCreateEvent extends CommentEvent
     /** @var boolean */
     protected $featured;
 
+    /** @var boolean */
+    protected $seen = 0;
+
     /**
      * @return int
      */
@@ -286,6 +289,25 @@ class CommentCreateEvent extends CommentEvent
     public function setFeatured($featured)
     {
         $this->featured = $featured;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSeen()
+    {
+        return $this->seen;
+    }
+
+    /**
+     * @param boolean $seen
+     * @return CommentCreateEvent
+     */
+    public function setSeen($seen)
+    {
+        $this->seen = $seen;
 
         return $this;
     }

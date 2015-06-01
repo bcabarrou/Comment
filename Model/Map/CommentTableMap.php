@@ -58,7 +58,7 @@ class CommentTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 17;
+    const NUM_COLUMNS = 18;
 
     /**
      * The number of lazy-loaded columns
@@ -68,7 +68,7 @@ class CommentTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 17;
+    const NUM_HYDRATE_COLUMNS = 18;
 
     /**
      * the column name for the ID field
@@ -136,6 +136,11 @@ class CommentTableMap extends TableMap
     const FEATURED = 'comment.FEATURED';
 
     /**
+     * the column name for the SEEN field
+     */
+    const SEEN = 'comment.SEEN';
+
+    /**
      * the column name for the LOCALE field
      */
     const LOCALE = 'comment.LOCALE';
@@ -187,12 +192,12 @@ class CommentTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Username', 'CustomerId', 'Ref', 'RefId', 'Email', 'Title', 'Content', 'Rating', 'Status', 'Verified', 'Abuse', 'Featured', 'Locale', 'CreatedAt', 'UpdatedAt', 'SortableRank', ),
-        self::TYPE_STUDLYPHPNAME => array('id', 'username', 'customerId', 'ref', 'refId', 'email', 'title', 'content', 'rating', 'status', 'verified', 'abuse', 'featured', 'locale', 'createdAt', 'updatedAt', 'sortableRank', ),
-        self::TYPE_COLNAME       => array(CommentTableMap::ID, CommentTableMap::USERNAME, CommentTableMap::CUSTOMER_ID, CommentTableMap::REF, CommentTableMap::REF_ID, CommentTableMap::EMAIL, CommentTableMap::TITLE, CommentTableMap::CONTENT, CommentTableMap::RATING, CommentTableMap::STATUS, CommentTableMap::VERIFIED, CommentTableMap::ABUSE, CommentTableMap::FEATURED, CommentTableMap::LOCALE, CommentTableMap::CREATED_AT, CommentTableMap::UPDATED_AT, CommentTableMap::SORTABLE_RANK, ),
-        self::TYPE_RAW_COLNAME   => array('ID', 'USERNAME', 'CUSTOMER_ID', 'REF', 'REF_ID', 'EMAIL', 'TITLE', 'CONTENT', 'RATING', 'STATUS', 'VERIFIED', 'ABUSE', 'FEATURED', 'LOCALE', 'CREATED_AT', 'UPDATED_AT', 'SORTABLE_RANK', ),
-        self::TYPE_FIELDNAME     => array('id', 'username', 'customer_id', 'ref', 'ref_id', 'email', 'title', 'content', 'rating', 'status', 'verified', 'abuse', 'featured', 'locale', 'created_at', 'updated_at', 'sortable_rank', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, )
+        self::TYPE_PHPNAME       => array('Id', 'Username', 'CustomerId', 'Ref', 'RefId', 'Email', 'Title', 'Content', 'Rating', 'Status', 'Verified', 'Abuse', 'Featured', 'Seen', 'Locale', 'CreatedAt', 'UpdatedAt', 'SortableRank', ),
+        self::TYPE_STUDLYPHPNAME => array('id', 'username', 'customerId', 'ref', 'refId', 'email', 'title', 'content', 'rating', 'status', 'verified', 'abuse', 'featured', 'seen', 'locale', 'createdAt', 'updatedAt', 'sortableRank', ),
+        self::TYPE_COLNAME       => array(CommentTableMap::ID, CommentTableMap::USERNAME, CommentTableMap::CUSTOMER_ID, CommentTableMap::REF, CommentTableMap::REF_ID, CommentTableMap::EMAIL, CommentTableMap::TITLE, CommentTableMap::CONTENT, CommentTableMap::RATING, CommentTableMap::STATUS, CommentTableMap::VERIFIED, CommentTableMap::ABUSE, CommentTableMap::FEATURED, CommentTableMap::SEEN, CommentTableMap::LOCALE, CommentTableMap::CREATED_AT, CommentTableMap::UPDATED_AT, CommentTableMap::SORTABLE_RANK, ),
+        self::TYPE_RAW_COLNAME   => array('ID', 'USERNAME', 'CUSTOMER_ID', 'REF', 'REF_ID', 'EMAIL', 'TITLE', 'CONTENT', 'RATING', 'STATUS', 'VERIFIED', 'ABUSE', 'FEATURED', 'SEEN', 'LOCALE', 'CREATED_AT', 'UPDATED_AT', 'SORTABLE_RANK', ),
+        self::TYPE_FIELDNAME     => array('id', 'username', 'customer_id', 'ref', 'ref_id', 'email', 'title', 'content', 'rating', 'status', 'verified', 'abuse', 'featured', 'seen', 'locale', 'created_at', 'updated_at', 'sortable_rank', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, )
     );
 
     /**
@@ -202,12 +207,12 @@ class CommentTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Username' => 1, 'CustomerId' => 2, 'Ref' => 3, 'RefId' => 4, 'Email' => 5, 'Title' => 6, 'Content' => 7, 'Rating' => 8, 'Status' => 9, 'Verified' => 10, 'Abuse' => 11, 'Featured' => 12, 'Locale' => 13, 'CreatedAt' => 14, 'UpdatedAt' => 15, 'SortableRank' => 16, ),
-        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'username' => 1, 'customerId' => 2, 'ref' => 3, 'refId' => 4, 'email' => 5, 'title' => 6, 'content' => 7, 'rating' => 8, 'status' => 9, 'verified' => 10, 'abuse' => 11, 'featured' => 12, 'locale' => 13, 'createdAt' => 14, 'updatedAt' => 15, 'sortableRank' => 16, ),
-        self::TYPE_COLNAME       => array(CommentTableMap::ID => 0, CommentTableMap::USERNAME => 1, CommentTableMap::CUSTOMER_ID => 2, CommentTableMap::REF => 3, CommentTableMap::REF_ID => 4, CommentTableMap::EMAIL => 5, CommentTableMap::TITLE => 6, CommentTableMap::CONTENT => 7, CommentTableMap::RATING => 8, CommentTableMap::STATUS => 9, CommentTableMap::VERIFIED => 10, CommentTableMap::ABUSE => 11, CommentTableMap::FEATURED => 12, CommentTableMap::LOCALE => 13, CommentTableMap::CREATED_AT => 14, CommentTableMap::UPDATED_AT => 15, CommentTableMap::SORTABLE_RANK => 16, ),
-        self::TYPE_RAW_COLNAME   => array('ID' => 0, 'USERNAME' => 1, 'CUSTOMER_ID' => 2, 'REF' => 3, 'REF_ID' => 4, 'EMAIL' => 5, 'TITLE' => 6, 'CONTENT' => 7, 'RATING' => 8, 'STATUS' => 9, 'VERIFIED' => 10, 'ABUSE' => 11, 'FEATURED' => 12, 'LOCALE' => 13, 'CREATED_AT' => 14, 'UPDATED_AT' => 15, 'SORTABLE_RANK' => 16, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'username' => 1, 'customer_id' => 2, 'ref' => 3, 'ref_id' => 4, 'email' => 5, 'title' => 6, 'content' => 7, 'rating' => 8, 'status' => 9, 'verified' => 10, 'abuse' => 11, 'featured' => 12, 'locale' => 13, 'created_at' => 14, 'updated_at' => 15, 'sortable_rank' => 16, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Username' => 1, 'CustomerId' => 2, 'Ref' => 3, 'RefId' => 4, 'Email' => 5, 'Title' => 6, 'Content' => 7, 'Rating' => 8, 'Status' => 9, 'Verified' => 10, 'Abuse' => 11, 'Featured' => 12, 'Seen' => 13, 'Locale' => 14, 'CreatedAt' => 15, 'UpdatedAt' => 16, 'SortableRank' => 17, ),
+        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'username' => 1, 'customerId' => 2, 'ref' => 3, 'refId' => 4, 'email' => 5, 'title' => 6, 'content' => 7, 'rating' => 8, 'status' => 9, 'verified' => 10, 'abuse' => 11, 'featured' => 12, 'seen' => 13, 'locale' => 14, 'createdAt' => 15, 'updatedAt' => 16, 'sortableRank' => 17, ),
+        self::TYPE_COLNAME       => array(CommentTableMap::ID => 0, CommentTableMap::USERNAME => 1, CommentTableMap::CUSTOMER_ID => 2, CommentTableMap::REF => 3, CommentTableMap::REF_ID => 4, CommentTableMap::EMAIL => 5, CommentTableMap::TITLE => 6, CommentTableMap::CONTENT => 7, CommentTableMap::RATING => 8, CommentTableMap::STATUS => 9, CommentTableMap::VERIFIED => 10, CommentTableMap::ABUSE => 11, CommentTableMap::FEATURED => 12, CommentTableMap::SEEN => 13, CommentTableMap::LOCALE => 14, CommentTableMap::CREATED_AT => 15, CommentTableMap::UPDATED_AT => 16, CommentTableMap::SORTABLE_RANK => 17, ),
+        self::TYPE_RAW_COLNAME   => array('ID' => 0, 'USERNAME' => 1, 'CUSTOMER_ID' => 2, 'REF' => 3, 'REF_ID' => 4, 'EMAIL' => 5, 'TITLE' => 6, 'CONTENT' => 7, 'RATING' => 8, 'STATUS' => 9, 'VERIFIED' => 10, 'ABUSE' => 11, 'FEATURED' => 12, 'SEEN' => 13, 'LOCALE' => 14, 'CREATED_AT' => 15, 'UPDATED_AT' => 16, 'SORTABLE_RANK' => 17, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'username' => 1, 'customer_id' => 2, 'ref' => 3, 'ref_id' => 4, 'email' => 5, 'title' => 6, 'content' => 7, 'rating' => 8, 'status' => 9, 'verified' => 10, 'abuse' => 11, 'featured' => 12, 'seen' => 13, 'locale' => 14, 'created_at' => 15, 'updated_at' => 16, 'sortable_rank' => 17, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, )
     );
 
     /**
@@ -238,7 +243,8 @@ class CommentTableMap extends TableMap
         $this->addColumn('STATUS', 'Status', 'TINYINT', false, null, 0);
         $this->addColumn('VERIFIED', 'Verified', 'TINYINT', false, null, null);
         $this->addColumn('ABUSE', 'Abuse', 'INTEGER', false, null, null);
-        $this->addColumn('FEATURED', 'Featured', 'BOOLEAN', false, 1, false);
+        $this->addColumn('FEATURED', 'Featured', 'TINYINT', false, null, 0);
+        $this->addColumn('SEEN', 'Seen', 'TINYINT', false, null, 0);
         $this->addColumn('LOCALE', 'Locale', 'VARCHAR', false, 10, null);
         $this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null, null);
@@ -418,6 +424,7 @@ class CommentTableMap extends TableMap
             $criteria->addSelectColumn(CommentTableMap::VERIFIED);
             $criteria->addSelectColumn(CommentTableMap::ABUSE);
             $criteria->addSelectColumn(CommentTableMap::FEATURED);
+            $criteria->addSelectColumn(CommentTableMap::SEEN);
             $criteria->addSelectColumn(CommentTableMap::LOCALE);
             $criteria->addSelectColumn(CommentTableMap::CREATED_AT);
             $criteria->addSelectColumn(CommentTableMap::UPDATED_AT);
@@ -436,6 +443,7 @@ class CommentTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.VERIFIED');
             $criteria->addSelectColumn($alias . '.ABUSE');
             $criteria->addSelectColumn($alias . '.FEATURED');
+            $criteria->addSelectColumn($alias . '.SEEN');
             $criteria->addSelectColumn($alias . '.LOCALE');
             $criteria->addSelectColumn($alias . '.CREATED_AT');
             $criteria->addSelectColumn($alias . '.UPDATED_AT');
