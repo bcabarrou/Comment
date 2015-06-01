@@ -30,6 +30,7 @@ use Comment\Events\CommentCreateEvent;
 use Comment\Events\CommentDeleteEvent;
 use Comment\Events\CommentEvent;
 use Comment\Events\CommentEvents;
+use Comment\Events\CommentReferenceGetterEvent;
 use Comment\Events\CommentUpdateEvent;
 use Comment\Form\CommentCreationForm;
 use Comment\Form\CommentModificationForm;
@@ -37,6 +38,7 @@ use Comment\Model\CommentQuery;
 use Exception;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Thelia\Controller\Admin\AbstractCrudController;
+use Thelia\Core\Event\UpdatePositionEvent;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Model\ConfigQuery;
@@ -287,6 +289,36 @@ class CommentController extends AbstractCrudController
         return $this->generateRedirectFromRoute('admin.comment.comments.default');
     }
 
+    protected function createUpdatePositionEvent($positionChangeMode, $positionValue)
+    {
+        return new UpdatePositionEvent(
+            $this->getRequest()->get('comment_id', null),
+            $positionChangeMode,
+            $positionValue
+        );
+    }
+
+    protected function performAdditionalUpdatePositionAction($positionChangeEvent)
+    {
+        /** @var UpdatePositionEvent $positionChangeEvent */
+
+        $comment = CommentQuery::create()->findPk($positionChangeEvent->getObjectId());
+        if ($comment === null) {
+            return null;
+        }
+
+        $event = new CommentReferenceGetterEvent(
+            $comment->getRef(),
+            $comment->getRefId(),
+            $this->getSession()->getLang()->getLocale()
+        );
+
+        $this->dispatch(CommentEvents::COMMENT_REFERENCE_GETTER, $event);
+
+        return $this->generateRedirect(
+            $event->getEditUrl() . '&current_tab=modules'
+        );
+    }
 
     public function changeStatusAction()
     {

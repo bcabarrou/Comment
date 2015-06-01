@@ -68,6 +68,9 @@
             <th>{intl d='comment.bo.default' l="Author"}</th>
             <th>{intl d='comment.bo.default' l="Comment"}</th>
             <th>{intl d='comment.bo.default' l="Reference"}</th>
+            {if $loop_ref_id}
+                <th>{intl l="Position"}</th>
+            {/if}
             <th>{intl d='comment.bo.default' l="Actions"}</th>
         </tr>
         </thead>
@@ -135,6 +138,20 @@
                     </a>
                     {/if}
                 </td>
+
+                {if $loop_ref_id}
+                    <td>
+                        {admin_position_block
+                            module="comment"
+                            access="UPDATE"
+                            path={url path='/admin/module/comment/update-position' comment_id=$ID}
+                            url_parameter="comment_id"
+                            in_place_edit_class="commentPositionChange"
+                            position=$POSITION
+                            id=$ID
+                        }
+                    </td>
+                {/if}
 
                 <td class="actions" data-id="{$ID}">
                     <div class="btn-group dropdown dropdown-status">
@@ -296,6 +313,10 @@ form_error_message  = $error_delete_message
     var commentConfig = {
         'status': '{url path="/admin/module/comment/status"}'
     };
+
+    // variables for the in-place position editing of comments
+    var commentPositionChangeTitle = '{intl l="Enter new comment position" d="comment.bo.default"}';
+    var commentPositionChangeUrl = "{url noamp='1' path='/admin/module/comment/update-position' comment_id='__ID__' position='__POS__'}";
 
     {hook name="comments.js" location="comments-js" }
 </script>

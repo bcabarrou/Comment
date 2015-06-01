@@ -149,5 +149,21 @@
         });
 
         setFilterLoop();
+
+        $('.commentPositionChange').editable({
+            type: 'text',
+            title: commentPositionChangeTitle,
+            mode: 'popup',
+            inputclass: 'input-mini',
+            placement: 'left',
+            success: function (response, newValue) {
+                // Perform subtitutions
+                url = commentPositionChangeUrl.replace('__ID__', $(this).data('id'))
+                    .replace('__POS__', newValue);
+
+                // Reload the page
+                location.href = url;
+            }
+        });
     });
 })(jQuery);
