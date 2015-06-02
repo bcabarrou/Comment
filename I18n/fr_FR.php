@@ -12,6 +12,7 @@ return array(
     'Content' => 'Message',
     'Customer' => 'Client',
     'Email' => 'Email',
+    'Featured' => 'Mis en avant',
     'For product comments. Only customers that bought the product can post comments.' => 'Pour les commentaires produits. Seuls les clients ayant achetés le produit  peuvent publier des commentaires.',
     'Global activation of comments. You can control activation by product, content.' => 'Activation globale des commentaires. Vous pouvez contrôler l\'activation par produit, contenu.',
     'Id' => 'Id',

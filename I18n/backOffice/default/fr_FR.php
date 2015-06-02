@@ -26,7 +26,6 @@ return array(
     'Editing comment "%name"' => 'Edition du commentaire "%name"',
     'Enter new comment position' => 'Classement du commentaire',
     'Error' => 'Erreur',
-    'Featured' => 'Mis en avant',
     'Filter' => 'Filtrer',
     'Home' => 'Accueil',
     'ID' => 'ID',
