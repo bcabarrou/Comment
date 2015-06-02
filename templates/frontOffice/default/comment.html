@@ -111,18 +111,14 @@
     </div>
 
     <div id="comment-body" class="comment-body">
-        <div class="well well-sm">
-            {intl d="comment.fo.default" l="Comments"}
-            {if $definition->hasRating()}
-                {$rating={meta meta="COMMENT_RATING" key="{$definition->getRef()}" id="{$definition->getRefId()}"}}
-                {if $rating}
-                <span class="pull-right">
-                    rating: {comment_stars value=$rating}
-                </span>
-                {/if}
-            {/if}
-        </div>
+        {if $definition->hasRating()}
+            <hr>
+            {loop type="comment-meta" name="comments-rating" key="{$definition->getRef()}" id="{$definition->getRefId()}"}
+                {include file="includes/rating-average.html" rating=$RATING count=$COUNT}
+            {/loop}
+        {/if}
 
+        <hr>
         <div id="comment-list" class="comment-list" data-ref="{$definition->getRef()}" data-id="{$definition->getRefId()}"></div>
     </div>
 </div>
