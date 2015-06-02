@@ -43,10 +43,18 @@ class CommentMetaLoop extends BaseLoop implements ArraySearchLoopInterface
         $metas = $loopResult->getResultDataCollection();
 
         $loopResultRow = new LoopResultRow();
-        $loopResultRow->set('RATING', $metas['rating']);
-        $loopResultRow->set('COUNT', $metas['count']);
 
-        $loopResult->addRow($loopResultRow);
+        if (isset($metas['rating'])) {
+            $loopResultRow->set('RATING', $metas['rating']);
+        }
+        if (isset($metas['count'])) {
+            $loopResultRow->set('COUNT', $metas['count']);
+        }
+
+        $vars = $loopResultRow->getVars();
+        if (!empty($vars)) {
+            $loopResult->addRow($loopResultRow);
+        }
 
         return $loopResult;
     }
