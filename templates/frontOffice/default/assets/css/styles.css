@@ -1,0 +1,6 @@
+section#comments .rating-average-block {
+  text-align: center;
+}
+section#comments .rating-average-block .rating-stars {
+  font-size: 24px;
+}

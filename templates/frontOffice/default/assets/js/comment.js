@@ -36,8 +36,9 @@
             $.ajax({
                 type: "GET",
                 data: {
-                    'ref': commentConfig['ref'],
-                    'ref_id': commentConfig['id'],
+                    'ref': $commentList.data('ref'),
+                    'ref_id': $commentList.data('id'),
+                    'featured': $commentList.data('featured'),
                     'start': start,
                     'count': count
                 },

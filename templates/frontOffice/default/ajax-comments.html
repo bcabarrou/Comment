@@ -17,8 +17,17 @@
     {/function}
 
 
-    {loop name="comments" type="comment" ref="{$ref}" ref_id="{$ref_id}" status="1" order="created_reverse"
-        offset="{$start}" limit="{$count}" }
+    {loop
+        name="comments"
+        type="comment"
+        ref="{$ref}"
+        ref_id="{$ref_id}"
+        featured="{$featured}"
+        status="1"
+        order="created_reverse"
+        offset="{$start}"
+        limit="{$count}"
+    }
 
     {if $CUSTOMER_ID}
         {loop name="customer" type="customer" id="{$CUSTOMER_ID}" current="false" limit="1"}

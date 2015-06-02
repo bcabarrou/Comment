@@ -1,0 +1,11 @@
+{ifloop rel="comments-rating"}
+    <hr>
+    <section id="comments">
+        {loop type="comment-meta" name="comments-rating" key="product-all" id=0}
+            {include "includes/rating-average.html" rating=$RATING count=$COUNT}
+        {/loop}
+
+        <hr>
+        <div id="comment-list" class="comment-list" data-featured="true"></div>
+    </section>
+{/ifloop}

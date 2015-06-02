@@ -1,0 +1,17 @@
+{* parameters:
+ *     - rating: average rating
+ *     - count: number of ratings
+ *}
+
+{include file="includes/stars.html"}
+
+<div class="rating-average-block">
+    <h2 class="block-title">{intl l='Our customers say...' d='comment.fo.default'}</h2>
+
+    {$rating|string_format:"%.1f"} / 5<br>
+    {intl l='From %ratings_count ratings' d='comment.fo.default' ratings_count=$count}<br>
+
+    <div class="rating-stars text-primary">
+        {call name="comment_stars" value={$rating|string_format:"%.0f"}}
+    </div>
+</div>

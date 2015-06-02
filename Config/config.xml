@@ -56,7 +56,10 @@
         <hook id="comment.hook.front" class="Comment\Hook\FrontHook" scope="request">
             <tag name="hook.event_listener" event="product.additional" method="onShowBlockComment" />
             <tag name="hook.event_listener" event="content.main-bottom" method="onShowComment" />
+            <tag name="hook.event_listener" event="category.bottom" method="onCategoryBottom" />
+            <tag name="hook.event_listener" event="home.body" method="onHomeBody" />
             <tag name="hook.event_listener" event="main.javascript-initialization" method="jsComment" />
+            <tag name="hook.event_listener" event="main.stylesheet" method="onMainStylesheet" />
         </hook>
         <!-- back -->
         <hook id="comment.hook.back" class="Comment\Hook\BackHook" scope="request">

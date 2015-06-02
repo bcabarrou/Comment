@@ -107,29 +107,39 @@ class FrontHook extends BaseHook
      */
     public function jsComment(HookRenderEvent $event)
     {
-        $allowedRef = explode(
-            ',',
-            ConfigQuery::read('comment_ref_allowed', Comment::CONFIG_REF_ALLOWED)
+            $event->add($this->render("js.html"));
+            $event->add($this->addJS('assets/js/comment.js'));
+    }
+
+    /**
+     * Add module-wide CSS.
+     *
+     * @param HookRenderEvent $event
+     */
+    public function onMainStylesheet(HookRenderEvent $event)
+    {
+        $event->add($this->addCSS("assets/css/styles.css"));
+    }
+
+    public function onCategoryBottom(HookRenderEvent $event)
+    {
+        $event->add(
+            $this->render(
+                "category.html",
+                [
+                    "category_id" => $event->getArgument("category")
+                ]
+            )
         );
+    }
 
-        if (in_array($this->getView(), $allowedRef)) {
-
-            list($ref, $refId) = $this->getParams($event);
-
-            $event->add(
-                $this->render(
-                    "js.html",
-                    [
-                        'ref' => $ref,
-                        'ref_id' => $refId
-                    ]
-                )
-            );
-
-            $event->add(
-                $this->addJS('assets/js/comment.js')
-            );
-        }
+    public function onHomeBody(HookRenderEvent $event)
+    {
+        $event->add(
+            $this->render(
+                "home.html"
+            )
+        );
     }
 
     protected function getParams(BaseHookRenderEvent $event)

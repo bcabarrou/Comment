@@ -51,25 +51,26 @@ class CommentController extends BaseFrontController
         // only ajax
         $this->checkXmlHttpRequest();
 
-        $definition = null;
-
-        try {
-            $definition = $this->getDefinition(
-                $this->getRequest()->get('ref', null),
-                $this->getRequest()->get('ref_id', null)
-            );
-        } catch (InvalidDefinitionException $ex) {
-            if ($ex->isSilent()) {
-                // Comment not authorized on this resource
-                $this->accessDenied();
-            }
-        }
+//        $definition = null;
+//
+//        try {
+//            $definition = $this->getDefinition(
+//                $this->getRequest()->get('ref', null),
+//                $this->getRequest()->get('ref_id', null)
+//            );
+//        } catch (InvalidDefinitionException $ex) {
+//            if ($ex->isSilent()) {
+//                // Comment not authorized on this resource
+//                $this->accessDenied();
+//            }
+//        }
 
         return $this->render(
             "ajax-comments",
             [
                 'ref' => $this->getRequest()->get('ref'),
                 'ref_id' => $this->getRequest()->get('ref_id'),
+                'featured' => $this->getRequest()->get('featured'),
                 'start' => $this->getRequest()->get('start', 0),
                 'count' => $this->getRequest()->get('count', 10),
             ]
