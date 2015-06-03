@@ -32,7 +32,6 @@
     {if $CUSTOMER_ID}
         {loop name="customer" type="customer" id="{$CUSTOMER_ID}" current="false" limit="1"}
             {$username="{$FIRSTNAME} {$LASTNAME|truncate:2:"...":false}"}
-            {$image="http://www.gravatar.com/avatar/{$EMAIL|trim|strtolower|md5}?d=mm&s=64"}
         {/loop}
         {elseloop rel="customer"}
             {$username={intl d="comment.fo.default" l="Anonymous"} }
@@ -40,7 +39,6 @@
         {/elseloop}
     {else}
         {$username=$USERNAME}
-        {$image="http://www.gravatar.com/avatar/{$EMAIL|trim|strtolower|md5}?d=mm&s=64"}
     {/if}
 
     <div id="comment-customer-{counter}" class="comment-item media">

@@ -93,8 +93,6 @@
                     {if $CUSTOMER_ID}
                         {loop type="customer" name="customer" id=$CUSTOMER_ID current="no" backend_context="1"}
                             <a href="{url path='/admin/customer/update' customer_id=$CUSTOMER_ID}">
-                                <img src="http://www.gravatar.com/avatar/{$EMAIL|trim|strtolower|md5}?s=48"
-                                     alt=""/><br>
                                 {$FIRSTNAME} {$LASTNAME}
                             </a>
                         {/loop}
@@ -105,8 +103,6 @@
                         <span class="label label-default">{intl d='comment.bo.default' l="not a customer"}</span>
                         <br>
                         <a href="mailto:{$EMAIL}">
-                            <img src="http://www.gravatar.com/avatar/{$EMAIL|trim|strtolower|md5}?s=48"
-                                 alt=""/><br>
                             {$USERNAME}
                         </a>
                     {/if}
