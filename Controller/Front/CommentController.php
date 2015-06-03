@@ -184,7 +184,7 @@ class CommentController extends BaseFrontController
                 $event->setStatus(\Comment\Model\Comment::PENDING);
             }
 
-            $event->setLocale($this->getRequest()->getLocale());
+            $event->setLocale($this->getSession()->getLang()->getLocale());
 
             $this->dispatch(CommentEvents::COMMENT_CREATE, $event);
 
