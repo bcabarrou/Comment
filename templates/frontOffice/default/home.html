@@ -5,7 +5,9 @@
             {include "includes/rating-average.html" rating=$RATING count=$COUNT}
         {/loop}
 
+        {if {count type="comment" name="count-featured-comments" featured="true"} > 0}
         <hr>
         <div id="comment-list" class="comment-list" data-featured="true"></div>
+        {/if}
     </section>
 {/ifloop}
