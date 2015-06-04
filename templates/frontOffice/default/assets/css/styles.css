@@ -1,6 +1,9 @@
 .rating-average-block {
   text-align: center;
 }
+.rating-average-block .numeric-rating {
+  font-size: 24px;
+}
 #form-add-comment .star-rating,
 .rating-average-block .star-rating {
   font-size: 24px;
