@@ -45,6 +45,7 @@
                 url: commentConfig['get']
             }).done(function(data){
                 $commentList.append(data);
+                applyStarRatings();
             }).fail(function(jqXHR, textStatus, errorThrown){
                 displayMessage($commentMessage, 'danger', [textStatus]);
             });

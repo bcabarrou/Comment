@@ -10,4 +10,36 @@ var commentConfig = {
     abuse: '{url path="/comment/abuse"}'
 };
 
+function applyStarRatings() {
+    $('.star-rating').each(function() {
+        $(this).raty({
+            starType: 'span',
+            starOn: 'star glyphicon glyphicon-star text-primary',
+            starOff: 'star glyphicon glyphicon-star text-muted',
+            hints: ['1', '2', '3', '4', '5'],
+            readOnly: function () {
+                return !$(this).data('editable');
+            },
+            cancel: true,
+            cancelOn: 'star glyphicon glyphicon-remove-circle text-danger',
+            cancelOff: 'star glyphicon glyphicon-remove-circle text-muted',
+            cancelHint: '0',
+            targetScore: $(this).data('target'),
+            score: function () {
+                var score = Math.floor($(this).attr('data-rating'));
+                $($(this).data('target')).val(score);
+                return score;
+            },
+            click: function(score, event) {
+                if (score === null) {
+                    $(this).raty('score', 0);
+                    $($(this).data('target')).val(0);
+                }
+            }
+        });
+    });
+}
+
+applyStarRatings();
+
 </script>

@@ -1,15 +1,4 @@
-{function name=comment_stars empty=1}
-    {$star='<span class="glyphicon glyphicon-star"></span>'}
-    {$star_empty='<span class="glyphicon glyphicon-star-empty"></span>'}
-
-    {for $foo=0 to 4}
-        {if $value > $foo}
-            {$star nofilter}
-        {elseif $empty == 1}
-            {$star_empty nofilter}
-        {/if}
-    {/for}
-{/function}
+{default_translation_domain domain='comment.fo.default'}
 
 <div class="comments-main">
 
@@ -70,32 +59,8 @@
                {form_field form=$form field="rating"}
                 <div class="form-group">
                     {$label}
-                    <div class="text-primary">
-                        <label class="radio-inline">
-                            <input type="radio" name="{$name}" value="0">
-                            {comment_stars value=0}
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="{$name}" value="1">
-                            {comment_stars value=1}
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="{$name}" value="2">
-                            {comment_stars value=2}
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="{$name}" value="3">
-                            {comment_stars value=3}
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="{$name}" value="4">
-                            {comment_stars value=4}
-                        </label>
-                        <label class="radio-inline">
-                            <input type="radio" name="{$name}" value="5">
-                            {comment_stars value=5}
-                        </label>
-                    </div>
+                    <input type="hidden" name="{$name}" id="{$label_attr.for}">
+                    <div class="star-rating" data-rating="0" data-editable="true" data-target="#{$label_attr.for}"></div>
                 </div>
                 {/form_field}
             {/if}

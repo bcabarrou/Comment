@@ -107,8 +107,9 @@ class FrontHook extends BaseHook
      */
     public function jsComment(HookRenderEvent $event)
     {
-            $event->add($this->render("js.html"));
-            $event->add($this->addJS('assets/js/comment.js'));
+        $event->add($this->addJS("assets/js/jquery.raty.js"));
+        $event->add($this->render("js.html"));
+        $event->add($this->addJS('assets/js/comment.js'));
     }
 
     /**
