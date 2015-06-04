@@ -25,6 +25,22 @@
                         {include file="include/comments-list.html"}
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="title title-without-tabs">
+                            {intl d='comment.bo.default' l="Comments requests"}
+                        </div>
+
+                        <a href="{url path='/admin/module/comment/request-customer'}"
+                           class="btn btn-primary action-btn">
+                            <span class="glyphicon glyphicon-envelope"></span> {intl d='comment.bo.default' l='Send comment request emails to customers'}
+                        </a>
+                        <span class="label-help-block">
+                            {intl d='comment.bo.default' l='This will send emails to all customers that ordered and paid products %days day(s) ago, inviting them to comment.' days={config key='comment_request_customer_ttl'}}
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -15,6 +15,7 @@ return array(
     'Comments' => 'Commentaires',
     'Comments activation.' => 'Activation des commentaires.',
     'Comments management' => 'Gestion des commentaires',
+    'Comments requests' => 'Demandes de commentaires',
     'Create a new comment' => 'Créer un nouveau commentaire',
     'Create this comment' => 'Créer ce commentaire',
     'Deactivated for this element' => 'Désactivé pour cet élément',
@@ -40,6 +41,9 @@ return array(
     'Reference' => 'Référence',
     'Refused' => 'Refusé',
     'Save' => 'Enregistrer',
+    'Send comment request emails to customers' => 'Envoyer les emails de demande de commentaire au clients',
+    'This will send emails to all customers that ordered and paid products %days day(s) ago, inviting them to comment.'
+    => 'Envoie des emails a tout les clients ayant commandé et payé des produits il y a %days jour(s), les invitant à commenter. ',
     'Sorry, comment ID=%id was not found.' => 'Désolé, le commentaire ID=%id n\'a pas été trouvé.',
     'Status' => 'Statut',
     'Status :' => 'Statut :',
@@ -50,5 +54,7 @@ return array(
     'not a customer' => 'pas un client',
     'rating: ' => 'note :',
     'verified: ' => 'vérifié :',
+    'product ordered: ' => 'produit commandé : ',
+    'featured: ' => 'mis en avant : ',
     'yes' => 'oui',
 );

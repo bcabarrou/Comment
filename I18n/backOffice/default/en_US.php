@@ -15,6 +15,7 @@ return array(
     'Comments' => 'Comments',
     'Comments activation.' => 'Comments activation.',
     'Comments management' => 'Comments management',
+    'Comments requests' => 'Comments requests',
     'Create a new comment' => 'Create a new comment',
     'Create this comment' => 'Create this comment',
     'Deactivated for this element' => 'Deactivated for this element',
@@ -40,6 +41,9 @@ return array(
     'Reference' => 'Reference',
     'Refused' => 'Refused',
     'Save' => 'Save',
+    'Send comment request emails to customers' => 'Send comment request emails to customers',
+    'This will send emails to all customers that ordered and paid products %days day(s) ago, inviting them to comment.'
+    => 'This will send emails to all customers that ordered and paid products %days day(s) ago, inviting them to comment.',
     'Sorry, comment ID=%id was not found.' => 'Sorry, comment ID=%id was not found.',
     'Status' => 'Status',
     'Status :' => 'Status :',
@@ -50,5 +54,7 @@ return array(
     'not a customer' => 'not a customer',
     'rating: ' => 'rating: ',
     'verified: ' => 'verified: ',
+    'product ordered: ' => 'product ordered: ',
+    'featured: ' => 'featured: ',
     'yes' => 'yes',
 );
