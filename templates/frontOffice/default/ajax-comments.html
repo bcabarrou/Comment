@@ -39,11 +39,6 @@
             <div class="comment-alert alert hidden"></div>
             <ul class="comment-extra list-inline">
                 <li class="comment-date">{format_date date="{$CREATED}" output="date"}</li>
-                {if $VERIFIED}
-                <li class="comment-verified comment--is-verified">{intl d="comment.fo.default" l="Verified"}</li>
-                {else}
-                <li class="comment-verified">{intl d="comment.fo.default" l="Verified"}</li>
-                {/if}
                 {if $customer_id && $customer_id == $CUSTOMER_ID}
                 <li><a href="{url path="/comment/delete/{$ID}"}" class="delete-trigger" data-id="{$ID}" data-message="{intl d="comment.fo.default" l="Are you sure ?"}">{intl d="comment.fo.default" l="Delete"}</a></li>
                 {else}
