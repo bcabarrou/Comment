@@ -474,7 +474,7 @@ class CommentAction extends BaseAction implements EventSubscriberInterface
         if ($config['only_customer'] && null === $event->getCustomer()) {
             throw new InvalidDefinitionException(
                 $this->translator->trans(
-                    "Only customer are allowed to publish comment",
+                    "Only logged-in customers can publish comments.",
                     [],
                     CommentModule::MESSAGE_DOMAIN
                 ),
@@ -549,7 +549,7 @@ class CommentAction extends BaseAction implements EventSubscriberInterface
                 if (0 === $productBoughtCount) {
                     throw new InvalidDefinitionException(
                         $this->translator->trans(
-                            "Only customers who have bought this product can publish comment",
+                            "Only customers who have bought this product can publish comments.",
                             [],
                             CommentModule::MESSAGE_DOMAIN
                         ),

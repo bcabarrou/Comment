@@ -11,11 +11,11 @@ return array(
     'From %ratings_count ratings' => 'Calculé à partir de %ratings_count avis',
     'Load more comments...' => 'Montrer plus de commentaires...',
     'Mark as inappropriate' => 'Marquer comme inaproprié',
-    'No more comments' => 'Plus de commentaire',
+    'No more comments.' => 'Aucun commentaire restant.',
     'Our customers say about this product...' => 'Ce que nos clients pensent de ce produit',
     'Our customers say about this category...' => 'Ce que nos clients pensent de cette catégorie',
     'Our customers say about our products...' => 'Ce que nos clients pensent de nos produits',
     'Send' => 'Envoyer',
-    'There are no comments yet' => 'Il n\'y a pas encore de commentaire',
+    'No comments yet.' => 'Il n\'y a pas encore de commentaires.',
     'Verified' => 'Vérifié',
 );

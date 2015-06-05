@@ -22,8 +22,9 @@ return array(
     'Moderate' => 'Moderate',
     'Notify store managers on new comment' => 'Notify store managers on new comment',
     'Only customer' => 'Only customer',
-    'Only customer are allowed to publish comment' => 'Only customer are allowed to publish comment',
-    'Only customers who have bought this product can publish comment' => 'Only customers who have bought this product can publish comment',
+    'Only logged-in customers can publish comments.' => 'Only logged-in customers can publish comments.',
+    'Only customers who have bought this product can publish comments.'
+    => 'Only customers who have bought this product can publish comments.',
     'Only registered customers can post comments.' => 'Only registered customers can post comments.',
     'Only verified' => 'Only verified',
     'Product %id does not exist' => 'Product %id does not exist',

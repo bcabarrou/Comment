@@ -22,8 +22,9 @@ return array(
     'Moderate' => 'Modération',
     'Notify store managers on new comment' => 'Notifier les administrateurs de la boutique des nouveaux commentaires',
     'Only customer' => 'Seuls les clients',
-    'Only customer are allowed to publish comment' => 'Seul les clients sont autorisés à publier des commentaires',
-    'Only customers who have bought this product can publish comment' => 'Seuls les clients ayant achetés ce produit peuvent publier des commentaires',
+    'Only logged-in customers can publish comments.' => 'Seuls les clients connectés peuvent publier des commentaires.',
+    'Only customers who have bought this product can publish comments.'
+    => 'Seuls les clients ayant acheté ce produit peuvent publier des commentaires.',
     'Only registered customers can post comments.' => 'Seuls les clients enregistrés peuvent publier des commentaires.',
     'Only verified' => 'Uniquement vérifié',
     'Product %id does not exist' => 'Le produit %id n\'existe pas',
