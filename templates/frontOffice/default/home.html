@@ -8,9 +8,9 @@
                 count=$COUNT
             }
 
-            {if {count type="comment" name="count-featured-comments" featured="true"} > 0}
+            {if {count type="comment" name="count-featured-comments" status="1" featured="true"} > 0}
             <hr>
-            <div id="comment-list" class="comment-list" data-featured="true"></div>
+            <div id="comment-list" class="comment-list" data-featured="true" data-silent-if-empty="true"></div>
             {/if}
         </section>
     {/if}
