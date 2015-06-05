@@ -7,6 +7,7 @@
         type="comment"
         ref="{$ref}"
         ref_id="{$ref_id}"
+        load_ref="1"
         featured="{$featured}"
         status="1"
         order="created_reverse"
@@ -30,7 +31,22 @@
         <img src="{$image}" alt="" class="pull-left" />
         <div class="media-body">
             <p>
-                {intl d="comment.fo.default" l="By <strong>%username</strong>" username={$username}}
+                {* if the loop is in featured mode, not if the product is featured *}
+                {if $featured}
+                    {intl
+                        d="comment.fo.default"
+                        l="By %username on %ref_link"
+                        username="<strong>$username</strong>"
+                        ref_link="<a href=\"{$REF_VIEW_URL}\">{$REF_TITLE}</a>"
+                    }
+                {else}
+                    {intl
+                        d="comment.fo.default"
+                        l="By %username"
+                        username="<strong>$username</strong>"
+                    }
+                {/if}
+
                 <span class="star-rating" data-rating="{$RATING}"></span>
             </p>
             <h3 class="comment-title media-heading">{$TITLE}</h3>
