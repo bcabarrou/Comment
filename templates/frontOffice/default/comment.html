@@ -4,9 +4,9 @@
 
     <div id="comment-top">
 
-        <div class="well well-sm">
+        <h3 class="block-title">
             {intl d="comment.fo.default" l="Add your comment"}
-        </div>
+        </h3>
 
         <div id="comment-top-message" class="alert hidden"></div>
 
@@ -58,7 +58,7 @@
 
                {form_field form=$form field="rating"}
                 <div class="form-group">
-                    {$label}
+                    <label for="{$label_attr.for}">{$label}</label>
                     <input type="hidden" name="{$name}" id="{$label_attr.for}">
                     <div class="star-rating" data-rating="0" data-editable="true" data-target="#{$label_attr.for}"></div>
                 </div>
