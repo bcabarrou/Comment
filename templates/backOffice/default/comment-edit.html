@@ -40,7 +40,11 @@
                                 {* Be sure to get the comment ID, even if the form could not be validated *}
                                 <input type="hidden" name="comment_id" value="{$comment_id}" />
 
-                                {include file="includes/inner-form-toolbar.html" close_url="{url path='/admin/module/comments'}"}
+                                {include
+                                    file="includes/inner-form-toolbar.html"
+                                    close_url="{url path='/admin/module/comments'}"
+                                    hide_flags="true"
+                                }
 
                                 {form_hidden_fields form=$form}
 
