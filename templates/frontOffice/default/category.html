@@ -2,7 +2,11 @@
     <hr>
     <section id="comments">
         {loop type="comment-meta" name="comments-rating" key="product-for-category" id=$category_id}
-            {include "includes/rating-average.html" rating=$RATING count=$COUNT}
+            {include "includes/rating-average.html"
+                title={intl l='Our customers say about this category...' d='comment.fo.default'}
+                rating=$RATING
+                count=$COUNT
+            }
         {/loop}
     </section>
 {/ifloop}

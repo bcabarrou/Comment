@@ -79,7 +79,11 @@
         {if $definition->hasRating()}
             <hr>
             {loop type="comment-meta" name="comments-rating" key="{$definition->getRef()}" id="{$definition->getRefId()}"}
-                {include file="includes/rating-average.html" rating=$RATING count=$COUNT}
+                {include file="includes/rating-average.html"
+                    title={intl l='Our customers say about this product...' d='comment.fo.default'}
+                    rating=$RATING
+                    count=$COUNT
+                }
             {/loop}
         {/if}
 
