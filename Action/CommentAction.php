@@ -419,6 +419,9 @@ class CommentAction extends BaseAction implements EventSubscriberInterface
         if ('product' === $event->getRef()) {
             $product = ProductQuery::create()->findPk($event->getRefId());
             if (null !== $product) {
+                if (null !== $event->getLocale()) {
+                    $product->setLocale($event->getLocale());
+                }
                 $event->setTypeTitle($this->translator->trans('Product', [], 'core', $event->getLocale()));
                 $event->setTitle($product->getTitle());
                 $event->setViewUrl($product->getUrl($event->getLocale()));
@@ -433,6 +436,9 @@ class CommentAction extends BaseAction implements EventSubscriberInterface
         } elseif ('content' === $event->getRef()) {
             $content = ContentQuery::create()->findPk($event->getRefId());
             if (null !== $content) {
+                if (null !== $event->getLocale()) {
+                    $content->setLocale($event->getLocale());
+                }
                 $event->setTypeTitle($this->translator->trans('Content', [], 'core', $event->getLocale()));
                 $event->setTitle($content->getTitle());
                 $event->setViewUrl($content->getUrl($event->getLocale()));
