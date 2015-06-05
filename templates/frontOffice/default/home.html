@@ -1,17 +1,17 @@
-{ifloop rel="comments-rating"}
-    <hr>
-    <section id="comments">
-        {loop type="comment-meta" name="comments-rating" key="product-all" id=0}
+{loop type="comment-meta" name="comments-rating" key="product-all" id=0}
+    {if $COUNT > 0}
+        <hr>
+        <section id="comments">
             {include "includes/rating-average.html"
                 title={intl l='Our customers say about our products...' d='comment.fo.default'}
                 rating=$RATING
                 count=$COUNT
             }
-        {/loop}
 
-        {if {count type="comment" name="count-featured-comments" featured="true"} > 0}
-        <hr>
-        <div id="comment-list" class="comment-list" data-featured="true"></div>
-        {/if}
-    </section>
-{/ifloop}
+            {if {count type="comment" name="count-featured-comments" featured="true"} > 0}
+            <hr>
+            <div id="comment-list" class="comment-list" data-featured="true"></div>
+            {/if}
+        </section>
+    {/if}
+{/loop}

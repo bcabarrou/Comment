@@ -2,12 +2,14 @@
     <div id="comments-content">
         {if $definition->hasRating()}
             {loop type="comment-meta" name="comments-rating" key="{$definition->getRef()}" id="{$definition->getRefId()}"}
-                {include file="includes/rating-average.html"
-                    title={intl l='Our customers say about this product...' d='comment.fo.default'}
-                    rating=$RATING
-                    count=$COUNT
-                }
-                <hr>
+                {if $COUNT > 0}
+                    {include file="includes/rating-average.html"
+                        title={intl l='Our customers say about this product...' d='comment.fo.default'}
+                        rating=$RATING
+                        count=$COUNT
+                    }
+                    <hr>
+                {/if}
             {/loop}
         {/if}
 
