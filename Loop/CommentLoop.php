@@ -260,7 +260,7 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
 
         $refLocale = $this->getRefLocale();
         if ($refLocale === null) {
-            $refLocale = $this->request->getLocale();
+            $refLocale = $this->request->getSession()->getLang()->getLocale();
         }
 
         if (!array_key_exists($key, $this->cacheRef)) {
