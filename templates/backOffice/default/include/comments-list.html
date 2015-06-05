@@ -128,10 +128,10 @@
                 <td>
                     {if $REF_VIEW_URL}
                     <a href="{$REF_VIEW_URL}" title="{intl d='comment.bo.default' l='View'}">
-                        {/if}
-                        {if $REF_TITLE}{$REF_TITLE} {/if}
-                        ({$REF}: {$REF_ID})
-                        {if $REF_VIEW_URL}
+                    {/if}
+                    {if $REF_TITLE}{$REF_TITLE}{/if}
+                    {if $REF_TYPE_TITLE} ({$REF_TYPE_TITLE}){/if}
+                    {if $REF_VIEW_URL}
                     </a>
                     {/if}
                 </td>
