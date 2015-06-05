@@ -136,6 +136,14 @@
                                         {$label}
                                     </label>
                                 </div>
+
+                                {form_field form=$form field='featured'}
+                                    <div class="checkbox {if $error}has-error{/if}">
+                                        <label>
+                                            <input type="checkbox" name="{$name}" value="1" {if $value == 1}checked="checked"{/if}>
+                                            {$label}
+                                        </label>
+                                    </div>
                                 {/form_field}
 
                                 {form_field form=$form field="rating"}
