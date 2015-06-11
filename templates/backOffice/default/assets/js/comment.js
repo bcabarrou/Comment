@@ -152,7 +152,7 @@
 
         $('.commentPositionChange').editable({
             type: 'text',
-            title: commentPositionChangeTitle,
+            title: (typeof commentPositionChangeTitle == 'undefined') ? '' : commentPositionChangeTitle,
             mode: 'popup',
             inputclass: 'input-mini',
             placement: 'left',
