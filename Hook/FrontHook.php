@@ -143,6 +143,18 @@ class FrontHook extends BaseHook
         );
     }
 
+    public function onProductDetailsBottom(HookRenderEvent $event)
+    {
+        $event->add(
+            $this->render(
+                "product-details.html",
+                [
+                    "product_id" => $event->getArgument("product"),
+                ]
+            )
+        );
+    }
+
     protected function getParams(BaseHookRenderEvent $event)
     {
         $ref = $event->getArgument('ref')

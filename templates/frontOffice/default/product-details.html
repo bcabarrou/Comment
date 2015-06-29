@@ -1,0 +1,8 @@
+{loop type="comment-meta" name="comments-rating" key="product" id=$product_id}
+<div class="rating-average-product-details">
+    <a href="{navigate to='current'}#comment-list">
+        <span class="star-rating" data-rating="{$RATING}"></span>
+        <span class="numeric-rating">{$RATING|string_format:"%.1f"} / 5</span>
+    </a>
+</div>
+{/loop}

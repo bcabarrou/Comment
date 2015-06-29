@@ -55,6 +55,7 @@
         <!-- front -->
         <hook id="comment.hook.front" class="Comment\Hook\FrontHook" scope="request">
             <tag name="hook.event_listener" event="product.bottom" method="onShowComment" />
+            <tag name="hook.event_listener" event="product.details-bottom" method="onProductDetailsBottom" />
             <tag name="hook.event_listener" event="content.main-bottom" method="onShowComment" />
             <tag name="hook.event_listener" event="category.bottom" method="onCategoryBottom" />
             <tag name="hook.event_listener" event="home.body" method="onHomeBody" />
