@@ -119,7 +119,7 @@ class FrontHook extends BaseHook
      */
     public function onMainStylesheet(HookRenderEvent $event)
     {
-        $event->add($this->addCSS("assets/css/styles.css"));
+        $event->add($this->addCSS("assets/less/styles.less", [], "less"));
     }
 
     public function onCategoryBottom(HookRenderEvent $event)
