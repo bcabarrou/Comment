@@ -12,6 +12,8 @@ return array(
     'Content' => 'Content',
     'Customer' => 'Customer',
     'Email' => 'Email',
+    'Each customer can only post one comment on each element that can be commented.'
+    => 'Each customer can only post one comment on each element that can be commented.',
     'Featured' => 'Featured',
     'For product comments. Only customers that bought the product can post comments.' => 'For product comments. Only customers that bought the product can post comments.',
     'Global activation of comments. You can control activation by product, content.' => 'Global activation of comments. You can control activation by product, content.',
@@ -23,6 +25,8 @@ return array(
     'Notify store managers on new comment' => 'Notify store managers on new comment',
     'Only customer' => 'Only customer',
     'Only logged-in customers can publish comments.' => 'Only logged-in customers can publish comments.',
+    'Only one comment allowed per reference for each customer'
+    => 'Only one comment allowed per reference for each customer',
     'Only customers who have bought this product can publish comments.'
     => 'Only customers who have bought this product can publish comments.',
     'Only registered customers can post comments.' => 'Only registered customers can post comments.',
@@ -39,6 +43,7 @@ return array(
     'Title' => 'Title',
     'Username' => 'Username',
     'Verified' => 'Verified',
+    'You already commented this.' => 'You already commented this.',
     'Your comment has been deleted.' => 'Your comment has been deleted.',
     'Your comment will be put online once verified.' => 'Your comment will be put online once verified.',
     'Your request could not be validated. Try it later' => 'Your request could not be validated. Try it later',

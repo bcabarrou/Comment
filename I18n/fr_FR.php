@@ -12,6 +12,8 @@ return array(
     'Content' => 'Message',
     'Customer' => 'Client',
     'Email' => 'Email',
+    'Each customer can only post one comment on each element that can be commented.'
+    => 'Chaque client ne peut poster qu\'un seul commentaire sur chaque élément pouvant être commenté.',
     'Featured' => 'Mis en avant',
     'For product comments. Only customers that bought the product can post comments.' => 'Pour les commentaires produits. Seuls les clients ayant achetés le produit  peuvent publier des commentaires.',
     'Global activation of comments. You can control activation by product, content.' => 'Activation globale des commentaires. Vous pouvez contrôler l\'activation par produit, contenu.',
@@ -23,6 +25,8 @@ return array(
     'Notify store managers on new comment' => 'Notifier les administrateurs de la boutique des nouveaux commentaires',
     'Only customer' => 'Seuls les clients',
     'Only logged-in customers can publish comments.' => 'Seuls les clients connectés peuvent publier des commentaires.',
+    'Only one comment allowed per reference for each customer'
+    => 'Un seul commentaire autorisé par référence pour chaque client',
     'Only customers who have bought this product can publish comments.'
     => 'Seuls les clients ayant acheté ce produit peuvent publier des commentaires.',
     'Only registered customers can post comments.' => 'Seuls les clients enregistrés peuvent publier des commentaires.',
@@ -40,6 +44,7 @@ return array(
     'Title' => 'Titre',
     'Username' => 'Nom',
     'Verified' => 'Vérifié',
+    'You already commented this.' => 'Vous avez déjà commenté ceci.',
     'Your comment has been deleted.' => 'Votre commentaire a été supprimé.',
     'Your comment will be put online once verified.' => 'Votre commentaire sera mis en ligne une fois vérifié.',
     'Your request could not be validated. Try it later' => 'Votre demande ne peux pas être validé. Essayer plus tard.',

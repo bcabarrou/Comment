@@ -447,6 +447,10 @@ class CommentController extends AbstractCrudController
                 'comment_notify_admin_new_comment',
                 $data['notify_admin_new_comment']
             );
+            ConfigQuery::write(
+                'comment_only_one_comment_per_ref_per_customer',
+                $data['only_one_comment_per_ref_per_customer']
+            );
         } catch (\Exception $e) {
             $message = $e->getMessage();
         }

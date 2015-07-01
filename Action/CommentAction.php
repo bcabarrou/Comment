@@ -98,6 +98,28 @@ class CommentAction extends BaseAction implements EventSubscriberInterface
 
     public function create(CommentCreateEvent $event)
     {
+        $config = \Comment\Comment::getConfig();
+
+        if ($config['only_one_comment_per_ref_per_customer']) {
+            // check that the customer has not already posted a comment on this reference
+            $existingComment = CommentQuery::create()
+                ->filterByCustomerId($event->getCustomerId())
+                ->filterByRef($event->getRef())
+                ->filterByRefId($event->getRefId())
+                ->findOne();
+
+            if ($existingComment !== null) {
+                throw new InvalidDefinitionException(
+                    $this->translator->trans(
+                        "You already commented this.",
+                        [],
+                        CommentModule::MESSAGE_DOMAIN
+                    ),
+                    false
+                );
+            }
+        }
+
         $comment = new Comment();
 
         $comment
@@ -491,6 +513,17 @@ class CommentAction extends BaseAction implements EventSubscriberInterface
                 ->findOne();
 
             if (null !== $comment) {
+                if ($config['only_one_comment_per_ref_per_customer']) {
+                    throw new InvalidDefinitionException(
+                        $this->translator->trans(
+                            "You already commented this.",
+                            [],
+                            CommentModule::MESSAGE_DOMAIN
+                        ),
+                        false
+                    );
+                }
+
                 $event->setComment($comment);
             }
         }

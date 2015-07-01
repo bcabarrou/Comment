@@ -59,6 +59,15 @@
                 </div>
                 {/form_field}
 
+                {form_field form=$form field='only_one_comment_per_ref_per_customer'}
+                    <div class="checkbox">
+                        <label for="{$label_attr.for}">
+                            <input type="checkbox" name="{$name}" id="{$label_attr.for}" value="yes" {$attr} {if $checked}checked="checked"{/if}/> {$label}
+                        </label>
+                        <span class="label-help-block">{$label_attr.help}</span>
+                    </div>
+                {/form_field}
+
                 {form_field form=$form field='request_customer_ttl'}
                 <div class="form-group {if $error}has-error{/if}">
                     <label for="{$label_attr.for}" class="control-label">{$label} : </label>

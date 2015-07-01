@@ -130,6 +130,20 @@ class ConfigurationForm extends BaseForm
                         )
                     ],
                 ]
+            )
+            ->add(
+                "only_one_comment_per_ref_per_customer",
+                "checkbox",
+                [
+                    'data' => $config['only_one_comment_per_ref_per_customer'],
+                    'label' => $this->trans("Only one comment allowed per reference for each customer"),
+                    'label_attr' => [
+                        'for' => "only_one_comment_per_ref_per_customer",
+                        'help' => $this->trans(
+                            "Each customer can only post one comment on each element that can be commented."
+                        )
+                    ],
+                ]
             );
     }
 

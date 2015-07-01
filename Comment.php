@@ -56,6 +56,9 @@ class Comment extends BaseModule
     /** Send an email notification to the store admins when a new comment is posted */
     const CONFIG_NOTIFY_ADMIN_NEW_COMMENT = true;
 
+    /** Only allow one comment per reference per customer */
+    const CONFIG_ONLY_ONE_COMMENT_PER_REF_PER_CUSTOMER = true;
+
 
     public function postActivation(ConnectionInterface $con = null)
     {
@@ -86,6 +89,13 @@ class Comment extends BaseModule
 
         if (null === ConfigQuery::read('comment_notify_admin_new_comment')) {
             ConfigQuery::write('comment_notify_admin_new_comment', Comment::CONFIG_NOTIFY_ADMIN_NEW_COMMENT);
+        }
+
+        if (null === ConfigQuery::read('comment_only_one_comment_per_ref_per_customer')) {
+            ConfigQuery::write(
+                'comment_only_one_comment_per_ref_per_customer',
+                Comment::CONFIG_ONLY_ONE_COMMENT_PER_REF_PER_CUSTOMER
+            );
         }
 
         // Schema
@@ -201,6 +211,14 @@ class Comment extends BaseModule
             'notify_admin_new_comment' => (
                 intval(ConfigQuery::read('comment_notify_admin_new_comment', self::CONFIG_NOTIFY_ADMIN_NEW_COMMENT))
                     === 1
+            ),
+            'only_one_comment_per_ref_per_customer' => (
+                intval(
+                    ConfigQuery::read(
+                        'comment_only_one_comment_per_ref_per_customer',
+                        self::CONFIG_ONLY_ONE_COMMENT_PER_REF_PER_CUSTOMER
+                    )
+                ) === 1
             ),
         ];
 
