@@ -63,7 +63,9 @@
             <th>{intl d='comment.bo.default' l="ID"}</th>
             <th>{intl d='comment.bo.default' l="Author"}</th>
             <th>{intl d='comment.bo.default' l="Comment"}</th>
-            <th>{intl d='comment.bo.default' l="Reference"}</th>
+            {if !$loop_ref_id}
+                <th>{intl d='comment.bo.default' l="Reference"}</th>
+            {/if}
             {if $loop_ref_id}
                 <th>{intl l="Position"}</th>
             {/if}
@@ -125,16 +127,18 @@
                 </td>
 
                 {* Reference *}
-                <td>
-                    {if $REF_EDIT_URL}
-                    <a href="{$REF_EDIT_URL}" title="{intl d='comment.bo.default' l='View'}">
-                    {/if}
-                    {if $REF_TITLE}{$REF_TITLE}{/if}
-                    {if $REF_TYPE_TITLE} ({$REF_TYPE_TITLE}){/if}
-                    {if $REF_EDIT_URL}
-                    </a>
-                    {/if}
-                </td>
+                {if !$loop_ref_id}
+                    <td>
+                        {if $REF_EDIT_URL}
+                        <a href="{$REF_EDIT_URL}" title="{intl d='comment.bo.default' l='View'}">
+                        {/if}
+                        {if $REF_TITLE}{$REF_TITLE}{/if}
+                        {if $REF_TYPE_TITLE} ({$REF_TYPE_TITLE}){/if}
+                        {if $REF_EDIT_URL}
+                        </a>
+                        {/if}
+                    </td>
+                {/if}
 
                 {if $loop_ref_id}
                     <td>
