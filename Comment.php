@@ -59,6 +59,9 @@ class Comment extends BaseModule
     /** Only allow one comment per reference per customer */
     const CONFIG_ONLY_ONE_COMMENT_PER_REF_PER_CUSTOMER = true;
 
+    /** Number of comments initially displayed in the front office  */
+    const CONFIG_COMMENTS_COUNT_PER_PAGE = 10;
+
 
     public function postActivation(ConnectionInterface $con = null)
     {
@@ -96,6 +99,10 @@ class Comment extends BaseModule
                 'comment_only_one_comment_per_ref_per_customer',
                 Comment::CONFIG_ONLY_ONE_COMMENT_PER_REF_PER_CUSTOMER
             );
+        }
+
+        if (null === ConfigQuery::read('comment_comments_count_per_page')) {
+            ConfigQuery::write('comment_comments_count_per_page', Comment::CONFIG_COMMENTS_COUNT_PER_PAGE);
         }
 
         // Schema
@@ -219,6 +226,9 @@ class Comment extends BaseModule
                         self::CONFIG_ONLY_ONE_COMMENT_PER_REF_PER_CUSTOMER
                     )
                 ) === 1
+            ),
+            'comments_count_per_page' => (
+                intval(ConfigQuery::read('comment_comments_count_per_page', self::CONFIG_COMMENTS_COUNT_PER_PAGE))
             ),
         ];
 

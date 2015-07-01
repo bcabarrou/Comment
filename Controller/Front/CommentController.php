@@ -65,6 +65,8 @@ class CommentController extends BaseFrontController
 //            }
 //        }
 
+        $config = Comment::getConfig();
+
         return $this->render(
             "ajax-comments",
             [
@@ -72,7 +74,7 @@ class CommentController extends BaseFrontController
                 'ref_id' => $this->getRequest()->get('ref_id'),
                 'featured' => $this->getRequest()->get('featured'),
                 'start' => $this->getRequest()->get('start', 0),
-                'count' => $this->getRequest()->get('count', 10),
+                'count' => $this->getRequest()->get('count', $config['comments_count_per_page']),
             ]
         );
     }

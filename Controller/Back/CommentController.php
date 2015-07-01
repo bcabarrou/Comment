@@ -451,6 +451,10 @@ class CommentController extends AbstractCrudController
                 'comment_only_one_comment_per_ref_per_customer',
                 $data['only_one_comment_per_ref_per_customer']
             );
+            ConfigQuery::write(
+                'comment_comments_count_per_page',
+                $data['comments_count_per_page']
+            );
         } catch (\Exception $e) {
             $message = $e->getMessage();
         }

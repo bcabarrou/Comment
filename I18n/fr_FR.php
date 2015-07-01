@@ -11,6 +11,8 @@ return array(
     'Comments are not validated automatically.' => 'Les commentaires ne sont pas validés automatiquement.',
     'Content' => 'Message',
     'Customer' => 'Client',
+    'Display this many comments at once in the front-office.'
+    => 'Afficher initialement ce nombre de commentaires.',
     'Email' => 'Email',
     'Each customer can only post one comment on each element that can be commented.'
     => 'Chaque client ne peut poster qu\'un seul commentaire sur chaque élément pouvant être commenté.',
@@ -23,6 +25,7 @@ return array(
     'Missing parameters' => 'Paramètres manquants',
     'Moderate' => 'Modération',
     'Notify store managers on new comment' => 'Notifier les administrateurs de la boutique des nouveaux commentaires',
+    'Number of comments per page' => 'Nombre de commentaires par page',
     'Only customer' => 'Seuls les clients',
     'Only logged-in customers can publish comments.' => 'Seuls les clients connectés peuvent publier des commentaires.',
     'Only one comment allowed per reference for each customer'

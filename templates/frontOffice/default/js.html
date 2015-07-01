@@ -2,7 +2,7 @@
 
 var commentConfig = {
     start: 0,
-    count: 10,
+    count: {config key="comment_comments_count_per_page"},
 
     get: '{url path="/comment/get"}',
     post: '{url path="/comment/add"}',

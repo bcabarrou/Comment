@@ -144,6 +144,20 @@ class ConfigurationForm extends BaseForm
                         )
                     ],
                 ]
+            )
+            ->add(
+                "comments_count_per_page",
+                "number",
+                [
+                    'data' => $config['comments_count_per_page'],
+                    'label' => $this->trans("Number of comments per page"),
+                    'label_attr' => [
+                        'for' => "request_customer_ttl",
+                        'help' => $this->trans(
+                            "Display this many comments at once in the front-office."
+                        )
+                    ],
+                ]
             );
     }
 

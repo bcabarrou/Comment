@@ -11,6 +11,8 @@ return array(
     'Comments are not validated automatically.' => 'Comments are not validated automatically.',
     'Content' => 'Content',
     'Customer' => 'Customer',
+    'Display this many comments at once in the front-office.'
+    => 'Display this many comments at once in the front-office.',
     'Email' => 'Email',
     'Each customer can only post one comment on each element that can be commented.'
     => 'Each customer can only post one comment on each element that can be commented.',
@@ -23,6 +25,7 @@ return array(
     'Missing parameters' => 'Missing parameters',
     'Moderate' => 'Moderate',
     'Notify store managers on new comment' => 'Notify store managers on new comment',
+    'Number of comments per page' => 'Number of comments per page',
     'Only customer' => 'Only customer',
     'Only logged-in customers can publish comments.' => 'Only logged-in customers can publish comments.',
     'Only one comment allowed per reference for each customer'
