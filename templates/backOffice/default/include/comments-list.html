@@ -111,7 +111,7 @@
                     <p>{$CONTENT}</p>
                     <ul class="list-inline">
                         <li>{intl d='comment.bo.default' l="Posted: "}
-                            <strong>{format_date date={$CREATED} output="datetime"}</strong></li>
+                            <strong>{format_date date=$CREATE_DATE output="datetime"}</strong></li>
                         <li>{intl d='comment.bo.default' l="rating: "} <strong>{$RATING}</strong></li>
                         <li>
                             {if $REF == 'product'}
