@@ -54,7 +54,7 @@
             <p class="comment-message">{$CONTENT}</p>
             <div class="comment-alert alert hidden"></div>
             <ul class="comment-extra list-inline">
-                <li class="comment-date">{format_date date="{$CREATED}" output="date"}</li>
+                <li class="comment-date">{format_date date=$CREATE_DATE output="date"}</li>
                 {if $customer_id && $customer_id == $CUSTOMER_ID}
                 <li><a href="{url path="/comment/delete/{$ID}"}" class="delete-trigger" data-id="{$ID}" data-message="{intl d="comment.fo.default" l="Are you sure ?"}">{intl d="comment.fo.default" l="Delete"}</a></li>
                 {else}
