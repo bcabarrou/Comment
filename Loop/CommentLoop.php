@@ -54,7 +54,7 @@ class CommentLoop extends BaseLoop implements PropelSearchLoopInterface
             Argument::createBooleanOrBothTypeArgument('verified', BooleanOrBothType::ANY),
             Argument::createAnyTypeArgument('locale'),
             Argument::createAnyTypeArgument('load_ref', 0),
-            Argument::createBooleanTypeArgument('featured', false),
+            Argument::createBooleanTypeArgument('featured'),
             new Argument(
                 'order',
                 new Type\TypeCollection(
